@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { MonthView } from './MonthView';
 import { AppProvider } from '../../context/AppContext';
+import { useAppContext } from '../../context/AppContext';
 import { loadData } from '../../utils/storageUtils';
 
 jest.mock('../../utils/storageUtils', () => ({
@@ -13,6 +14,16 @@ const mockedLoadData = loadData as jest.Mock;
 
 function wrapper({ children }: { children: ReactNode }) {
   return <AppProvider>{children}</AppProvider>;
+}
+
+function StateInspector() {
+  const { state } = useAppContext();
+  return (
+    <div>
+      <span data-testid="draggedTaskId">{state.draggedTaskId ?? 'null'}</span>
+      <span data-testid="dropTargetDate">{state.dropTargetDate ?? 'null'}</span>
+    </div>
+  );
 }
 
 describe('MonthView', () => {
@@ -46,5 +57,63 @@ describe('MonthView', () => {
   it('renders month header', () => {
     const { container } = render(<MonthView />, { wrapper });
     expect(container.querySelector('.month-header')).toBeInTheDocument();
+  });
+
+  it('sets drag state on dragover', () => {
+    render(
+      <AppProvider>
+        <StateInspector />
+        <MonthView />
+      </AppProvider>
+    );
+    const firstDayCell = document.querySelector('.day-cell')!;
+    const date = firstDayCell.getAttribute('data-date')!;
+    const dragEvent = new Event('dragover', { bubbles: true });
+    Object.defineProperty(dragEvent, 'dataTransfer', {
+      value: { dropEffect: '' },
+    });
+    fireEvent(firstDayCell, dragEvent);
+    expect(screen.getByTestId('dropTargetDate')).toHaveTextContent(date);
+  });
+
+  it('clears drop target on dragleave', () => {
+    render(
+      <AppProvider>
+        <StateInspector />
+        <MonthView />
+      </AppProvider>
+    );
+    const firstDayCell = document.querySelector('.day-cell')!;
+    const date = firstDayCell.getAttribute('data-date')!;
+    const dragEvent = new Event('dragover', { bubbles: true });
+    Object.defineProperty(dragEvent, 'dataTransfer', {
+      value: { dropEffect: '' },
+    });
+    fireEvent(firstDayCell, dragEvent);
+    expect(screen.getByTestId('dropTargetDate')).toHaveTextContent(date);
+    fireEvent.dragLeave(firstDayCell);
+    expect(screen.getByTestId('dropTargetDate')).toHaveTextContent('null');
+  });
+
+  it('clears drag state after drop', () => {
+    render(
+      <AppProvider>
+        <StateInspector />
+        <MonthView />
+      </AppProvider>
+    );
+    const firstDayCell = document.querySelector('.day-cell')!;
+    const dragEvent = new Event('dragover', { bubbles: true });
+    Object.defineProperty(dragEvent, 'dataTransfer', {
+      value: { dropEffect: '' },
+    });
+    fireEvent(firstDayCell, dragEvent);
+    const dropEvent = new Event('drop', { bubbles: true });
+    Object.defineProperty(dropEvent, 'dataTransfer', {
+      value: { getData: () => '', dropEffect: '' },
+    });
+    fireEvent(firstDayCell, dropEvent);
+    expect(screen.getByTestId('draggedTaskId')).toHaveTextContent('null');
+    expect(screen.getByTestId('dropTargetDate')).toHaveTextContent('null');
   });
 });

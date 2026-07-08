@@ -6,20 +6,23 @@ interface DayCellProps {
   tasks: Task[];
   isToday: boolean;
   isCurrentMonth: boolean;
+  dropTarget?: string | null;
   onComplete: (taskId: string) => void;
   onDelete: (taskId: string) => void;
   onDragOver?: (e: React.DragEvent) => void;
+  onDragLeave?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
 }
 
-export function DayCell({ date, tasks, isToday, isCurrentMonth, onComplete, onDelete, onDragOver, onDrop }: DayCellProps) {
+export function DayCell({ date, tasks, isToday, isCurrentMonth, dropTarget, onComplete, onDelete, onDragOver, onDragLeave, onDrop }: DayCellProps) {
   const dateObj = new Date(date);
   const dayNum = dateObj.getDate();
 
   return (
     <div
-      className={`day-cell ${isToday ? 'today' : ''} ${!isCurrentMonth ? 'other-month' : ''}`}
+      className={`day-cell ${isToday ? 'today' : ''} ${!isCurrentMonth ? 'other-month' : ''} ${dropTarget === date ? 'drag-over' : ''}`}
       onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
       onDrop={onDrop}
       data-date={date}
     >

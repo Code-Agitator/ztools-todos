@@ -31,6 +31,7 @@ export function TaskItem({
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('text/plain', task.id);
+    e.dataTransfer.effectAllowed = 'move';
     onDragStart?.(task.id);
   };
 

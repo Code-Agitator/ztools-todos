@@ -198,4 +198,51 @@ describe('DayCell', () => {
     fireEvent.drop(container.querySelector('.day-cell')!);
     expect(handleDrop).toHaveBeenCalledTimes(1);
   });
+
+  it('applies drag-over class when dropTarget matches date', () => {
+    const { container } = render(
+      <DayCell
+        date="2026-07-08"
+        tasks={[]}
+        isToday={false}
+        isCurrentMonth={true}
+        dropTarget="2026-07-08"
+        onComplete={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(container.querySelector('.day-cell')).toHaveClass('drag-over');
+  });
+
+  it('does not apply drag-over class when dropTarget does not match date', () => {
+    const { container } = render(
+      <DayCell
+        date="2026-07-08"
+        tasks={[]}
+        isToday={false}
+        isCurrentMonth={true}
+        dropTarget="2026-07-09"
+        onComplete={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(container.querySelector('.day-cell')).not.toHaveClass('drag-over');
+  });
+
+  it('calls onDragLeave when drag leaves', () => {
+    const handleDragLeave = jest.fn();
+    const { container } = render(
+      <DayCell
+        date="2026-07-08"
+        tasks={[]}
+        isToday={false}
+        isCurrentMonth={true}
+        onComplete={() => {}}
+        onDelete={() => {}}
+        onDragLeave={handleDragLeave}
+      />
+    );
+    fireEvent.dragLeave(container.querySelector('.day-cell')!);
+    expect(handleDragLeave).toHaveBeenCalledTimes(1);
+  });
 });

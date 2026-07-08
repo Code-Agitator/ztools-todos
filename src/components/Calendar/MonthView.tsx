@@ -15,6 +15,7 @@ export function MonthView() {
 
   const handleDrop = (date: string, e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
     const taskId = e.dataTransfer.getData('text/plain');
     if (taskId) {
       addDateToTask(taskId, date);
@@ -24,7 +25,12 @@ export function MonthView() {
 
   const handleDragOver = (date: string, e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
     dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: state.draggedTaskId, dropTarget: date } });
+  };
+
+  const handleDragLeave = (date: string, e: React.DragEvent) => {
+    dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: state.draggedTaskId, dropTarget: null } });
   };
 
   return (
@@ -44,9 +50,11 @@ export function MonthView() {
               tasks={dayTasks}
               isToday={isToday(date)}
               isCurrentMonth={isCurrentMonth}
+              dropTarget={state.dropTargetDate}
               onComplete={completeTask}
               onDelete={deleteTask}
               onDragOver={(e) => handleDragOver(date, e)}
+              onDragLeave={(e) => handleDragLeave(date, e)}
               onDrop={(e) => handleDrop(date, e)}
             />
           );

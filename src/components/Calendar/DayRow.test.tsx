@@ -146,4 +146,48 @@ describe('DayRow', () => {
     fireEvent.drop(dayRow);
     expect(handleDrop).toHaveBeenCalledTimes(1);
   });
+
+  it('applies drag-over class when dropTarget matches date', () => {
+    const { container } = render(
+      <DayRow
+        date="2026-07-08"
+        tasks={[]}
+        isToday={false}
+        dropTarget="2026-07-08"
+        onComplete={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(container.querySelector('.day-row')).toHaveClass('drag-over');
+  });
+
+  it('does not apply drag-over class when dropTarget does not match date', () => {
+    const { container } = render(
+      <DayRow
+        date="2026-07-08"
+        tasks={[]}
+        isToday={false}
+        dropTarget="2026-07-09"
+        onComplete={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(container.querySelector('.day-row')).not.toHaveClass('drag-over');
+  });
+
+  it('calls onDragLeave when drag leaves', () => {
+    const handleDragLeave = jest.fn();
+    const { container } = render(
+      <DayRow
+        date="2026-07-08"
+        tasks={[]}
+        isToday={false}
+        onComplete={() => {}}
+        onDelete={() => {}}
+        onDragLeave={handleDragLeave}
+      />
+    );
+    fireEvent.dragLeave(container.querySelector('.day-row')!);
+    expect(handleDragLeave).toHaveBeenCalledTimes(1);
+  });
 });

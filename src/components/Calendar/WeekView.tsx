@@ -15,6 +15,7 @@ export function WeekView() {
 
   const handleDrop = (date: string, e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
     const taskId = e.dataTransfer.getData('text/plain');
     if (taskId) {
       addDateToTask(taskId, date);
@@ -24,7 +25,12 @@ export function WeekView() {
 
   const handleDragOver = (date: string, e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
     dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: state.draggedTaskId, dropTarget: date } });
+  };
+
+  const handleDragLeave = (date: string, e: React.DragEvent) => {
+    dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: state.draggedTaskId, dropTarget: null } });
   };
 
   return (
@@ -37,9 +43,11 @@ export function WeekView() {
             date={dayDate}
             tasks={dayTasks}
             isToday={isToday(dayDate)}
+            dropTarget={state.dropTargetDate}
             onComplete={completeTask}
             onDelete={deleteTask}
             onDragOver={(e) => handleDragOver(dayDate, e)}
+            onDragLeave={(e) => handleDragLeave(dayDate, e)}
             onDrop={(e) => handleDrop(dayDate, e)}
           />
         );

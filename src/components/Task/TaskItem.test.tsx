@@ -119,4 +119,31 @@ describe('TaskItem', () => {
     const taskItem = container.querySelector('.task-item');
     expect(taskItem).toHaveAttribute('draggable', 'true');
   });
+
+  it('sets effectAllowed to move on drag start', () => {
+    const handleDragStart = jest.fn();
+    const task = createMockTask();
+    render(<TaskItem task={task} onComplete={() => {}} onDelete={() => {}} onDragStart={handleDragStart} />);
+    
+    const taskItem = screen.getByText('Test Task').closest('.task-item')!;
+    const setDataMock = jest.fn();
+    const dragEvent = new Event('dragstart', { bubbles: true });
+    Object.defineProperty(dragEvent, 'dataTransfer', {
+      value: { setData: setDataMock, effectAllowed: '' },
+    });
+    fireEvent(taskItem, dragEvent);
+    
+    expect(setDataMock).toHaveBeenCalledWith('text/plain', '1');
+  });
+
+  it('calls onDragEnd when drag ends', () => {
+    const handleDragEnd = jest.fn();
+    const task = createMockTask();
+    render(<TaskItem task={task} onComplete={() => {}} onDelete={() => {}} onDragEnd={handleDragEnd} />);
+    
+    const taskItem = screen.getByText('Test Task').closest('.task-item')!;
+    fireEvent.dragEnd(taskItem);
+    
+    expect(handleDragEnd).toHaveBeenCalledTimes(1);
+  });
 });

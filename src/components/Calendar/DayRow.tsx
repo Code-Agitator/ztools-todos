@@ -6,13 +6,15 @@ interface DayRowProps {
   date: string;
   tasks: Task[];
   isToday: boolean;
+  dropTarget?: string | null;
   onComplete: (taskId: string) => void;
   onDelete: (taskId: string) => void;
   onDragOver?: (e: React.DragEvent) => void;
+  onDragLeave?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
 }
 
-export function DayRow({ date, tasks, isToday, onComplete, onDelete, onDragOver, onDrop }: DayRowProps) {
+export function DayRow({ date, tasks, isToday, dropTarget, onComplete, onDelete, onDragOver, onDragLeave, onDrop }: DayRowProps) {
   const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   const dateObj = new Date(date);
   const dayName = dayNames[dateObj.getDay()];
@@ -20,8 +22,9 @@ export function DayRow({ date, tasks, isToday, onComplete, onDelete, onDragOver,
 
   return (
     <div
-      className={`day-row ${isToday ? 'today' : ''} ${tasks.length > 0 ? 'has-tasks' : ''}`}
+      className={`day-row ${isToday ? 'today' : ''} ${tasks.length > 0 ? 'has-tasks' : ''} ${dropTarget === date ? 'drag-over' : ''}`}
       onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
       onDrop={onDrop}
       data-date={date}
     >
