@@ -64,3 +64,60 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-light);
 }
+
+/* 全局过渡动画 */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all var(--transition-normal);
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all var(--transition-normal);
+}
+
+/* 列表动画 */
+.list-item-enter {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.list-item-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all var(--transition-normal);
+}
+
+.list-item-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.list-item-exit-active {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all var(--transition-normal);
+}
+
+/* 减少动画偏好支持 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
