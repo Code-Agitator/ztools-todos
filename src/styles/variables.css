@@ -1,0 +1,57 @@
+:root {
+  /* 工作区颜色 */
+  --color-work: #4CAF50;
+  --color-life: #2196F3;
+  --color-study: #9C27B0;
+  
+  /* 当前工作区颜色（默认工作） */
+  --primary-color: var(--color-work);
+  
+  /* 中性色 */
+  --color-text: #333333;
+  --color-text-secondary: #666666;
+  --color-text-light: #999999;
+  --color-background: #FFFFFF;
+  --color-background-light: #F5F5F5;
+  --color-border: #E0E0E0;
+  
+  /* 状态颜色 */
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --color-danger: #F44336;
+  --color-info: #2196F3;
+  
+  /* 优先级颜色 */
+  --priority-high: #F44336;
+  --priority-medium: #FF9800;
+  --priority-low: #4CAF50;
+  
+  /* 间距 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* 字体 */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+  
+  /* 过渡 */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
