@@ -14,7 +14,7 @@ interface TaskItemProps {
   isToday?: boolean;
 }
 
-export function TaskItem({
+export const TaskItem = React.memo(function TaskItem({
   task,
   onComplete,
   onDelete,
@@ -73,4 +73,4 @@ export function TaskItem({
       </button>
     </div>
   );
-}
+});

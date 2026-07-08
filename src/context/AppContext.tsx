@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useReducer, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { AppState, AppAction } from '../types';
 import { appReducer, initialState } from '../reducers/appReducer';
 import { loadData, saveData } from '../utils/storageUtils';
@@ -20,9 +20,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return init;
   });
 
-  // 防抖保存到 localStorage
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
+  // 使用防抖写入 localStorage
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const debouncedSave = useCallback((state: AppState) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
       saveData({
         version: '1.0.0',
         workspaces: state.workspaces,
@@ -31,8 +36,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         currentDate: state.currentDate,
       });
     }, 500);
-    return () => clearTimeout(timeoutId);
-  }, [state]);
+  }, []);
+
+  useEffect(() => {
+    debouncedSave(state);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [state, debouncedSave]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

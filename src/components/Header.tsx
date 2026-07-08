@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ViewToggle } from '../components/ViewToggle';
 import { WorkspaceSwitcher } from '../components/WorkspaceSwitcher';
 import { useAppContext } from '../context/AppContext';
@@ -10,13 +10,13 @@ export function Header() {
   const { viewMode } = state;
   const { navigatePrev, navigateNext, goToToday, getCurrentWeek } = useCalendar();
 
-  const handleViewModeChange = (mode: 'week' | 'month') => {
+  const handleViewModeChange = useCallback((mode: 'week' | 'month') => {
     dispatch({ type: 'SET_VIEW_MODE', payload: { viewMode: mode } });
-  };
+  }, [dispatch]);
 
-  const handleWorkspaceChange = (workspace: 'work' | 'life' | 'study') => {
+  const handleWorkspaceChange = useCallback((workspace: 'work' | 'life' | 'study') => {
     dispatch({ type: 'SWITCH_WORKSPACE', payload: { workspace } });
-  };
+  }, [dispatch]);
 
   const weekDays = getCurrentWeek();
   const weekStart = new Date(weekDays[0]);

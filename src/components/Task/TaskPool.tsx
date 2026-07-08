@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useTasks } from '../../hooks/useTasks';
 import { useAppContext } from '../../context/AppContext';
 import { TaskGroup } from './TaskGroup';
@@ -48,11 +48,13 @@ export function TaskPool() {
     dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: null, dropTarget: null } });
   };
 
-  // 分组任务
-  const overdueTasks = filteredTasks.filter(t => getTaskStatus(t) === 'overdue');
-  const todayTasks = filteredTasks.filter(t => t.dates.some(d => isToday(d)));
-  const unscheduledTasks = filteredTasks.filter(t => t.dates.length === 0);
-  const completedTasks = filteredTasks.filter(t => t.status === 'done');
+  // 使用 useMemo 缓存分组计算
+  const { overdueTasks, todayTasks, unscheduledTasks, completedTasks } = useMemo(() => ({
+    overdueTasks: filteredTasks.filter(t => getTaskStatus(t) === 'overdue'),
+    todayTasks: filteredTasks.filter(t => t.dates.some(d => isToday(d))),
+    unscheduledTasks: filteredTasks.filter(t => t.dates.length === 0),
+    completedTasks: filteredTasks.filter(t => t.status === 'done')
+  }), [filteredTasks]);
 
   // 计算总任务数（不含已完成）
   const totalCount = overdueTasks.length + todayTasks.length + unscheduledTasks.length;
