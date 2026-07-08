@@ -35,8 +35,12 @@ export function getTaskStatus(task: Task): TaskStatus {
     return 'done';
   }
 
-  const hasOverdueDate = task.dates.some(date => isOverdue(date));
-  if (hasOverdueDate) {
+  if (task.dates.length === 0) {
+    return 'todo';
+  }
+
+  const lastDate = [...task.dates].sort().pop();
+  if (lastDate && isOverdue(lastDate)) {
     return 'overdue';
   }
 

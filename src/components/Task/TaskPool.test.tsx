@@ -34,7 +34,7 @@ describe('TaskPool', () => {
   });
 
   it('renders empty state icon', () => {
-    renderWithProvider(<TaskPool />);
-    expect(screen.getByText('📝')).toBeInTheDocument();
+    const { container } = renderWithProvider(<TaskPool />);
+    expect(container.querySelector('.lucide-file-text')).toBeInTheDocument();
   });
 });

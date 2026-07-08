@@ -12,12 +12,13 @@ interface DayRowProps {
   onDragStart?: (taskId: string) => void;
   onDragEnd?: () => void;
   onRemoveDate?: (taskId: string, date: string) => void;
+  onComplete?: (taskId: string) => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDragLeave?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
 }
 
-export function DayRow({ date, tasks, isToday, dropTarget, hoveredTaskId, onHoverTask, onDragStart, onDragEnd, onRemoveDate, onDragOver, onDragLeave, onDrop }: DayRowProps) {
+export function DayRow({ date, tasks, isToday, dropTarget, hoveredTaskId, onHoverTask, onDragStart, onDragEnd, onRemoveDate, onComplete, onDragOver, onDragLeave, onDrop }: DayRowProps) {
   const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   const dateObj = new Date(date);
   const dayName = dayNames[dateObj.getDay()];
@@ -36,9 +37,11 @@ export function DayRow({ date, tasks, isToday, dropTarget, hoveredTaskId, onHove
       data-date={date}
     >
       <div className="day-header">
-        <span className="day-name">{dayName}</span>
-        <span className="day-date">{dayNum}</span>
-        {isToday && <span className="today-label">今天</span>}
+        <div className="day-date-card">
+          <span className="day-name">{dayName}</span>
+          <span className="day-date">{dayNum}</span>
+        </div>
+        {isToday && <span className="today-badge">今天</span>}
       </div>
       <div className="day-tasks">
         {tasks.map(task => (
@@ -50,6 +53,7 @@ export function DayRow({ date, tasks, isToday, dropTarget, hoveredTaskId, onHove
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             onRemove={handleRemove}
+            onComplete={onComplete}
           />
         ))}
       </div>

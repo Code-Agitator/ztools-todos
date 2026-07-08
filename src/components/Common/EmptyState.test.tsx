@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { EmptyState } from './EmptyState'
+import { Inbox, FileText } from 'lucide-react'
 
 describe('EmptyState', () => {
   it('renders title', () => {
@@ -8,13 +9,13 @@ describe('EmptyState', () => {
   })
 
   it('renders default icon', () => {
-    render(<EmptyState title="No tasks" />)
-    expect(screen.getByText('📭')).toBeInTheDocument()
+    const { container } = render(<EmptyState title="No tasks" />)
+    expect(container.querySelector('.empty-state-icon svg')).toBeInTheDocument()
   })
 
   it('renders custom icon', () => {
-    render(<EmptyState title="No tasks" icon="📦" />)
-    expect(screen.getByText('📦')).toBeInTheDocument()
+    const { container } = render(<EmptyState title="No tasks" icon={FileText} />)
+    expect(container.querySelector('.empty-state-icon svg')).toBeInTheDocument()
   })
 
   it('renders description when provided', () => {

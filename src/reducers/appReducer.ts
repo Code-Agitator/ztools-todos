@@ -67,7 +67,9 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       
       for (const workspaceKey of Object.keys(updatedWorkspaces) as Array<keyof typeof updatedWorkspaces>) {
         updatedWorkspaces[workspaceKey] = updatedWorkspaces[workspaceKey].map(task =>
-          task.id === taskId ? { ...task, status: 'done' as const } : task
+          task.id === taskId
+            ? { ...task, status: task.status === 'done' ? 'todo' as const : 'done' as const }
+            : task
         );
       }
       

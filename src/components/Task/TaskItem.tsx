@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Task } from '../../types';
 import { formatTaskDates } from '../../utils/taskUtils';
 import { getTaskColor } from '../../utils/colorUtils';
@@ -30,6 +30,136 @@ export const TaskItem = React.memo(function TaskItem({
   onHover
 }: TaskItemProps) {
   const taskColor = getTaskColor(task.id);
+  const itemRef = useRef<HTMLDivElement>(null);
+  const callbacksRef = useRef({ onComplete, onDelete });
+  callbacksRef.current = { onComplete, onDelete };
+
+  useEffect(() => {
+    const item = itemRef.current;
+    if (!item) return;
+
+    let active = false;
+
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 2 || active) return;
+      e.preventDefault();
+      e.stopPropagation();
+      active = true;
+
+      const rect = item.getBoundingClientRect();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const threshold = 40;
+
+      const clone = item.cloneNode(true) as HTMLDivElement;
+      const bar = clone.querySelector('.priority-indicator') as HTMLElement;
+      Object.assign(clone.style, {
+        position: 'fixed',
+        left: rect.x + 'px',
+        top: rect.y + 'px',
+        width: rect.width + 'px',
+        height: rect.height + 'px',
+        zIndex: '9999',
+        pointerEvents: 'none',
+        margin: '0',
+        background: 'white',
+        willChange: 'transform',
+      });
+      document.body.appendChild(clone);
+      item.style.opacity = '0.3';
+
+      let raf: number | null = null;
+      let pendingDx = 0;
+      let pendingDy = 0;
+
+      const flush = () => {
+        raf = null;
+        const dx = pendingDx;
+        const dy = pendingDy;
+
+        if (dx > 2) {
+          const p = Math.min(dx / threshold, 1);
+          clone.style.background = `rgba(16,185,129,${0.05 + p * 0.35})`;
+          clone.style.borderColor = `rgba(16,185,129,${0.15 + p * 0.5})`;
+          clone.style.opacity = '1';
+          clone.style.transform = `translate(${dx}px,${dy}px)`;
+          if (bar) bar.style.background = '#10b981';
+        } else if (dx < -2) {
+          const p = Math.min(-dx / threshold, 1);
+          clone.style.opacity = String(1 - p * 0.7);
+          clone.style.transform = `translate(${dx}px,${dy}px) scale(${1 - p * 0.1})`;
+          clone.style.borderColor = 'rgba(168, 162, 158, 0.25)';
+          if (bar) bar.style.background = '';
+        } else {
+          clone.style.background = 'white';
+          clone.style.borderColor = 'rgba(168,162,158,0.25)';
+          clone.style.opacity = '1';
+          clone.style.transform = `translate(${dx}px,${dy}px)`;
+          if (bar) bar.style.background = '';
+        }
+      };
+
+      const onMouseMove = (e: MouseEvent) => {
+        pendingDx = e.clientX - startX;
+        pendingDy = e.clientY - startY;
+        if (raf === null) {
+          raf = requestAnimationFrame(flush);
+        }
+      };
+
+      const onMouseUp = (e: MouseEvent) => {
+        if (raf !== null) cancelAnimationFrame(raf);
+        const dx = e.clientX - startX;
+        const { onComplete, onDelete } = callbacksRef.current;
+
+        if (dx > threshold && onComplete) onComplete(task.id);
+        else if (dx < -threshold && onDelete) onDelete(task.id);
+
+        clone.remove();
+        item.style.opacity = '';
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('mousedown', onCancelMouseDown);
+        document.removeEventListener('keydown', onKeyDown);
+        active = false;
+      };
+
+      const onCancelMouseDown = (e: MouseEvent) => {
+        if (e.button !== 2) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (raf !== null) cancelAnimationFrame(raf);
+          clone.remove();
+          item.style.opacity = '';
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+          document.removeEventListener('mousedown', onCancelMouseDown);
+          document.removeEventListener('keydown', onKeyDown);
+          active = false;
+        }
+      };
+
+      const onKeyDown = (e: KeyboardEvent) => {
+        e.preventDefault();
+        if (raf !== null) cancelAnimationFrame(raf);
+        clone.remove();
+        item.style.opacity = '';
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('mousedown', onCancelMouseDown);
+        document.removeEventListener('keydown', onKeyDown);
+        active = false;
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('mousedown', onCancelMouseDown);
+      document.addEventListener('keydown', onKeyDown);
+    };
+
+    item.addEventListener('mousedown', onMouseDown);
+    return () => item.removeEventListener('mousedown', onMouseDown);
+  }, [task.id]);
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('text/plain', task.id);
@@ -37,30 +167,17 @@ export const TaskItem = React.memo(function TaskItem({
     onDragStart?.(task.id);
   };
 
-  const handleMouseEnter = () => {
-    onHover?.(task.id);
-  };
-
-  const handleMouseLeave = () => {
-    onHover?.(null);
-  };
-
   return (
     <div
+      ref={itemRef}
       className={`task-item ${task.status === 'done' ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isToday ? 'today' : ''} ${isHighlighted ? 'highlighted' : ''}`}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => onHover?.(task.id)}
+      onMouseLeave={() => onHover?.(null)}
       style={{ '--task-color': taskColor } as React.CSSProperties}
     >
-      <input
-        type="checkbox"
-        checked={task.status === 'done'}
-        onChange={() => onComplete(task.id)}
-        className="task-checkbox"
-      />
       <div
         className="priority-indicator"
         style={{ backgroundColor: taskColor }}
@@ -76,13 +193,6 @@ export const TaskItem = React.memo(function TaskItem({
           </div>
         )}
       </div>
-      <button
-        className="task-delete-btn"
-        onClick={() => onDelete(task.id)}
-        title="删除"
-      >
-        ×
-      </button>
     </div>
   );
 });

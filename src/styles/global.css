@@ -18,7 +18,7 @@ body {
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   color: var(--ink);
-  background-color: var(--paper);
+  background-color: transparent;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -170,17 +170,23 @@ a {
     min-height: 48px !important;
   }
 
+  .day-date-card {
+    width: 44px !important;
+    min-width: 44px !important;
+    padding: var(--sp-1) !important;
+    border-radius: var(--radius-md) !important;
+  }
+
   .day-name {
-    width: 28px !important;
-    font-size: 10px !important;
+    font-size: 9px !important;
   }
 
   .day-date {
-    font-size: var(--font-size-base) !important;
+    font-size: 18px !important;
   }
 
   .day-tasks {
-    padding-left: 36px !important;
+    padding-left: var(--sp-2) !important;
   }
 
   .task-pool {

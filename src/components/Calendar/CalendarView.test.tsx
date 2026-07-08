@@ -22,10 +22,10 @@ describe('CalendarView', () => {
   });
 
   it('renders calendar nav', () => {
-    render(<CalendarView />, { wrapper });
+    const { container } = render(<CalendarView />, { wrapper });
     expect(screen.getAllByText('今天').length).toBeGreaterThan(0);
-    expect(screen.getByText('◀')).toBeInTheDocument();
-    expect(screen.getByText('▶')).toBeInTheDocument();
+    expect(container.querySelector('.lucide-chevron-left')).toBeInTheDocument();
+    expect(container.querySelector('.lucide-chevron-right')).toBeInTheDocument();
   });
 
   it('renders with calendar-view class', () => {

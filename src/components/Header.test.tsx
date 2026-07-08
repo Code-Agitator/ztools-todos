@@ -12,41 +12,21 @@ describe('Header', () => {
     expect(screen.getByText('Todos')).toBeInTheDocument();
   });
 
-  it('renders view toggle buttons', () => {
-    renderWithProvider(<Header />);
-    expect(screen.getByText('周')).toBeInTheDocument();
-    expect(screen.getByText('月')).toBeInTheDocument();
-  });
-
-  it('renders navigation buttons', () => {
-    renderWithProvider(<Header />);
-    expect(screen.getByText('◀')).toBeInTheDocument();
-    expect(screen.getByText('▶')).toBeInTheDocument();
-    expect(screen.getByText('今天')).toBeInTheDocument();
-  });
-
   it('renders workspace switcher', () => {
     renderWithProvider(<Header />);
     expect(screen.getByText('工作')).toBeInTheDocument();
+    expect(screen.getByText('生活')).toBeInTheDocument();
+    expect(screen.getByText('学习')).toBeInTheDocument();
   });
 
-  it('displays current week text', () => {
-    renderWithProvider(<Header />);
-    const dateText = screen.getByText(/\d+月\d+-\d+日/);
-    expect(dateText).toBeInTheDocument();
+  it('renders view toggle', () => {
+    const { container } = renderWithProvider(<Header />);
+    expect(container.querySelector('.view-toggle')).toBeInTheDocument();
+    expect(container.querySelector('.view-btn')).toBeInTheDocument();
   });
 
-  it('calls navigatePrev when prev button is clicked', () => {
-    renderWithProvider(<Header />);
-    const prevBtn = screen.getByText('◀');
-    expect(prevBtn).toBeInTheDocument();
-    fireEvent.click(prevBtn);
-  });
-
-  it('calls navigateNext when next button is clicked', () => {
-    renderWithProvider(<Header />);
-    const nextBtn = screen.getByText('▶');
-    expect(nextBtn).toBeInTheDocument();
-    fireEvent.click(nextBtn);
+  it('renders with correct container class', () => {
+    const { container } = renderWithProvider(<Header />);
+    expect(container.querySelector('.header')).toBeInTheDocument();
   });
 });

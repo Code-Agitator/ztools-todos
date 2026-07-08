@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Search, X } from 'lucide-react'
 import './Common.css'
 
 interface SearchInputProps {
@@ -40,6 +41,7 @@ export function SearchInput({
 
   return (
     <div className={`search-input ${className || ''}`}>
+      <Search size={16} className="search-icon" />
       <input
         type="text"
         value={localValue}
@@ -47,7 +49,9 @@ export function SearchInput({
         placeholder={placeholder}
       />
       {localValue && (
-        <button className="clear-btn" onClick={handleClear}>✕</button>
+        <button className="clear-btn" onClick={handleClear}>
+          <X size={14} />
+        </button>
       )}
     </div>
   )

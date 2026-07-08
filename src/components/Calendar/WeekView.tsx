@@ -13,7 +13,7 @@ interface WeekViewProps {
 export function WeekView({ hoveredTaskId, onHoverTask }: WeekViewProps) {
   const { state, dispatch } = useAppContext();
   const { getCurrentWeek } = useCalendar();
-  const { getCurrentTasks, addDateToTask, removeDateFromTask } = useTasks();
+  const { getCurrentTasks, addDateToTask, removeDateFromTask, completeTask } = useTasks();
 
   const weekDays = getCurrentWeek();
   const tasks = getCurrentTasks();
@@ -38,16 +38,12 @@ export function WeekView({ hoveredTaskId, onHoverTask }: WeekViewProps) {
     dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: state.draggedTaskId, dropTarget: null } });
   };
 
-  const handleDragStart = (taskId: string) => {
-    dispatch({ type: 'SET_DRAG_STATE', payload: { taskId, dropTarget: null } });
-  };
-
-  const handleDragEnd = () => {
-    dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: null, dropTarget: null } });
-  };
-
   const handleRemoveDate = (taskId: string, date: string) => {
     removeDateFromTask(taskId, date);
+  };
+
+  const handleComplete = (taskId: string) => {
+    completeTask(taskId);
   };
 
   return (
@@ -63,9 +59,8 @@ export function WeekView({ hoveredTaskId, onHoverTask }: WeekViewProps) {
             dropTarget={state.dropTargetDate}
             hoveredTaskId={hoveredTaskId}
             onHoverTask={onHoverTask}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
             onRemoveDate={handleRemoveDate}
+            onComplete={handleComplete}
             onDragOver={(e) => handleDragOver(dayDate, e)}
             onDragLeave={(e) => handleDragLeave(dayDate, e)}
             onDrop={(e) => handleDrop(dayDate, e)}

@@ -1,8 +1,9 @@
 import React from 'react'
+import { Inbox, type LucideIcon } from 'lucide-react'
 import './Common.css'
 
 interface EmptyStateProps {
-  icon?: string
+  icon?: LucideIcon
   title: string
   description?: string
   action?: {
@@ -11,10 +12,12 @@ interface EmptyStateProps {
   }
 }
 
-export function EmptyState({ icon = '📭', title, description, action }: EmptyStateProps) {
+export function EmptyState({ icon: IconComponent = Inbox, title, description, action }: EmptyStateProps) {
   return (
     <div className="empty-state">
-      <span className="empty-state-icon">{icon}</span>
+      <span className="empty-state-icon">
+        <IconComponent size={48} strokeWidth={1.5} />
+      </span>
       <h3 className="empty-state-title">{title}</h3>
       {description && <p className="empty-state-description">{description}</p>}
       {action && (

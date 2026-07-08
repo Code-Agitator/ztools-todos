@@ -33,8 +33,10 @@ export function TaskGroup({
     return null;
   }
 
+  const isOverdue = title === '逾期任务';
+
   return (
-    <div className={`task-group ${isCollapsed ? 'collapsed' : ''}`}>
+    <div className={`task-group ${isCollapsed ? 'collapsed' : ''} ${isOverdue ? 'overdue-group' : ''}`}>
       <div
         className="task-group-header"
         onClick={() => setIsCollapsed(!isCollapsed)}

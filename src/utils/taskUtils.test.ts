@@ -88,6 +88,40 @@ describe('taskUtils', () => {
       };
       expect(getTaskStatus(task)).toBe('todo');
     });
+
+    it('should return todo for tasks with past dates but future last date', () => {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const task: Task = {
+        id: '1',
+        title: 'Test',
+        priority: 'medium',
+        dates: [formatDate(yesterday), formatDate(tomorrow)],
+        status: 'todo',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-01-01',
+      };
+      expect(getTaskStatus(task)).toBe('todo');
+    });
+
+    it('should return overdue for tasks with future dates but last date is past', () => {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+      const task: Task = {
+        id: '1',
+        title: 'Test',
+        priority: 'medium',
+        dates: [formatDate(twoDaysAgo), formatDate(yesterday)],
+        status: 'todo',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-01-01',
+      };
+      expect(getTaskStatus(task)).toBe('overdue');
+    });
   });
 
   describe('formatTaskDates', () => {

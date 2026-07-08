@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useTasks } from '../../hooks/useTasks';
 import { useAppContext } from '../../context/AppContext';
 import { TaskGroup } from './TaskGroup';
-import { SearchInput } from '../Common/SearchInput';
 import { EmptyState } from '../Common/EmptyState';
 import { isToday, isThisWeek } from '../../utils/dateUtils';
 import { getTaskStatus, searchTasks } from '../../utils/taskUtils';
+import { FileText } from 'lucide-react';
 import './Task.css';
 
 interface TaskPoolProps {
@@ -75,17 +75,11 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
         <h2>待办池</h2>
         <span className="task-count">{totalCount} 项任务</span>
       </div>
-      
-      <SearchInput
-        value={state.searchQuery}
-        onChange={(query) => dispatch({ type: 'SET_SEARCH_QUERY', payload: { query } })}
-        placeholder="搜索任务..."
-      />
 
       <div className="task-pool-content">
         {tasks.length === 0 ? (
           <EmptyState
-            icon="📝"
+            icon={FileText}
             title="暂无任务"
             description="在下方输入框中添加新任务"
           />

@@ -19,6 +19,11 @@ export function CalendarView({ hoveredTaskId, onHoverTask }: CalendarViewProps) 
     dispatch({ type: 'SET_VIEW_MODE', payload: { viewMode: mode } });
   };
 
+  const handleDateClick = (date: string) => {
+    dispatch({ type: 'SET_CURRENT_DATE', payload: { date } });
+    dispatch({ type: 'SET_VIEW_MODE', payload: { viewMode: 'week' } });
+  };
+
   return (
     <div className="calendar-view">
       <CalendarNav
@@ -32,7 +37,11 @@ export function CalendarView({ hoveredTaskId, onHoverTask }: CalendarViewProps) 
       {viewMode === 'week' ? (
         <WeekView hoveredTaskId={hoveredTaskId} onHoverTask={onHoverTask} />
       ) : (
-        <MonthView hoveredTaskId={hoveredTaskId} onHoverTask={onHoverTask} />
+        <MonthView
+          hoveredTaskId={hoveredTaskId}
+          onHoverTask={onHoverTask}
+          onDateClick={handleDateClick}
+        />
       )}
     </div>
   );

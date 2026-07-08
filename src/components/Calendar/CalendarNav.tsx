@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronLeft, ChevronRight } from '../Common/Icon';
 
 interface CalendarNavProps {
   currentDate: string;
@@ -33,15 +34,11 @@ export function CalendarNav({ currentDate, viewMode, onPrev, onNext, onToday }: 
       </div>
       <div className="cal-nav-right">
         <button className="nav-btn" onClick={onPrev} title="上一周">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
+          <ChevronLeft size={18} />
         </button>
         <button className="today-btn" onClick={onToday}>今天</button>
         <button className="nav-btn" onClick={onNext} title="下一周">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="9 6 15 12 9 18"></polyline>
-          </svg>
+          <ChevronRight size={18} />
         </button>
       </div>
     </div>

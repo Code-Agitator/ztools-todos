@@ -41,7 +41,7 @@ describe('SearchInput', () => {
   it('clears value when clear button clicked', () => {
     const handleChange = jest.fn()
     const handleClear = jest.fn()
-    render(<SearchInput value="" onChange={handleChange} onClear={handleClear} />)
+    const { container } = render(<SearchInput value="" onChange={handleChange} onClear={handleClear} />)
     
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } })
     
@@ -49,7 +49,7 @@ describe('SearchInput', () => {
       jest.advanceTimersByTime(300)
     })
     
-    const clearBtn = screen.getByText('✕')
+    const clearBtn = container.querySelector('.clear-btn') as HTMLElement
     fireEvent.click(clearBtn)
     
     expect(handleClear).toHaveBeenCalled()
@@ -60,13 +60,13 @@ describe('SearchInput', () => {
   })
 
   it('does not show clear button when empty', () => {
-    render(<SearchInput value="" onChange={() => {}} />)
-    expect(screen.queryByText('✕')).not.toBeInTheDocument()
+    const { container } = render(<SearchInput value="" onChange={() => {}} />)
+    expect(container.querySelector('.clear-btn')).not.toBeInTheDocument()
   })
 
   it('shows clear button when has value', () => {
-    render(<SearchInput value="test" onChange={() => {}} />)
-    expect(screen.getByText('✕')).toBeInTheDocument()
+    const { container } = render(<SearchInput value="test" onChange={() => {}} />)
+    expect(container.querySelector('.clear-btn')).toBeInTheDocument()
   })
 
   it('applies custom className', () => {

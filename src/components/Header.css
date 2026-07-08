@@ -8,7 +8,7 @@
   padding: 0 var(--sp-4);
   height: 40px;
   border-bottom: 1px solid var(--color-border);
-  background: var(--paper);
+  background: transparent;
   z-index: 10;
   flex-shrink: 0;
 }
@@ -23,6 +23,17 @@
   display: flex;
   align-items: center;
   gap: var(--sp-3);
+}
+
+.header-search {
+  width: 160px;
+}
+
+.header-search input {
+  height: 28px;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 12px;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -115,15 +126,16 @@
    ═══════════════════════════════════════════════════════════ */
 .view-toggle {
   display: flex;
-  background: rgba(168, 162, 158, 0.15);
+  background: transparent;
   border-radius: var(--radius-md);
   padding: 2px;
 }
 
 .view-btn {
   padding: 2px var(--sp-2);
-  font-size: var(--text-xs);
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--graphite);
   border-radius: var(--radius-sm);
   transition: all var(--duration-fast) var(--ease-out);
@@ -134,7 +146,7 @@
 }
 
 .view-btn.active {
-  background: var(--paper);
+  background: transparent;
   color: var(--ink);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }

@@ -1,7 +1,8 @@
 import { createContext, useContext, useReducer, useEffect, useCallback, useRef, ReactNode } from 'react';
-import { AppState, AppAction } from '../types';
+import { AppState, AppAction, Workspace } from '../types';
 import { appReducer, initialState } from '../reducers/appReducer';
 import { loadData, saveData } from '../utils/storageUtils';
+import { generateMockData, isDevMode } from '../utils/mockData';
 
 interface AppContextType {
   state: AppState;
@@ -12,6 +13,18 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState, (init) => {
+    // 开发模式下加载模拟数据
+    if (isDevMode) {
+      const mockData = generateMockData();
+      return {
+        ...init,
+        workspaces: mockData,
+        currentWorkspace: 'work' as Workspace,
+        viewMode: 'week' as const,
+        currentDate: init.currentDate,
+      };
+    }
+
     // 从 localStorage 加载初始数据
     const savedData = loadData();
     if (savedData) {
