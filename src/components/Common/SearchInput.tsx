@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import './Common.css'
 
 interface SearchInputProps {
   value: string

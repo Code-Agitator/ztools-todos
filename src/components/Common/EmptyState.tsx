@@ -1,4 +1,5 @@
 import React from 'react'
+import './Common.css'
 
 interface EmptyStateProps {
   icon?: string

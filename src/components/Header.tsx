@@ -3,6 +3,7 @@ import { ViewToggle } from '../components/ViewToggle';
 import { WorkspaceSwitcher } from '../components/WorkspaceSwitcher';
 import { useAppContext } from '../context/AppContext';
 import { useCalendar } from '../hooks/useCalendar';
+import './Header.css';
 
 export function Header() {
   const { state, dispatch } = useAppContext();

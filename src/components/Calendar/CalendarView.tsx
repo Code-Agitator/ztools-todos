@@ -4,6 +4,7 @@ import { useAppContext } from '../../context/AppContext';
 import { CalendarNav } from './CalendarNav';
 import { WeekView } from './WeekView';
 import { MonthView } from './MonthView';
+import './Calendar.css';
 
 export function CalendarView() {
   const { state, dispatch } = useAppContext();

@@ -6,6 +6,7 @@ import { SearchInput } from '../Common/SearchInput';
 import { EmptyState } from '../Common/EmptyState';
 import { isToday } from '../../utils/dateUtils';
 import { getTaskStatus, searchTasks } from '../../utils/taskUtils';
+import './Task.css';
 
 export function TaskPool() {
   const { state, dispatch } = useAppContext();

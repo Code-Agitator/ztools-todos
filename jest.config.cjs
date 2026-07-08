@@ -5,6 +5,7 @@ module.exports = {
   setupFilesAfterEnv: ['./src/setupTests.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '\\.css$': '<rootDir>/src/__mocks__/styleMock.js',
   },
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   collectCoverageFrom: [
