@@ -1,0 +1,45 @@
+import React from 'react';
+import { AppProvider } from '../context/AppContext';
+import { Header } from './Header';
+import { CalendarView } from './Calendar/CalendarView';
+import { TaskPool } from './Task/TaskPool';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { useAppContext } from '../context/AppContext';
+
+function TodoAppContent() {
+  const { state, dispatch } = useAppContext();
+
+  useKeyboardShortcuts({
+    onSearch: () => {
+      const searchInput = document.querySelector('.search-input input') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.focus();
+      }
+    },
+    onToggleView: () => {
+      const newMode = state.viewMode === 'week' ? 'month' : 'week';
+      dispatch({ type: 'SET_VIEW_MODE', payload: { viewMode: newMode } });
+    },
+    onEscape: () => {
+      dispatch({ type: 'SET_SEARCH_QUERY', payload: { query: '' } });
+    }
+  });
+
+  return (
+    <div className="todo-app">
+      <Header />
+      <div className="todo-content">
+        <CalendarView />
+        <TaskPool />
+      </div>
+    </div>
+  );
+}
+
+export default function TodoApp() {
+  return (
+    <AppProvider>
+      <TodoAppContent />
+    </AppProvider>
+  );
+}
