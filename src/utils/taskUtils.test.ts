@@ -4,6 +4,7 @@ import {
   getTaskStatus,
   formatTaskDates,
   sortTasksByPriority,
+  searchTasks,
 } from './taskUtils';
 import { formatDate } from './dateUtils';
 
@@ -184,6 +185,77 @@ describe('taskUtils', () => {
       sortTasksByPriority(tasks);
       expect(tasks[0].priority).toBe('low');
       expect(tasks[1].priority).toBe('high');
+    });
+  });
+
+  describe('searchTasks', () => {
+    const tasks: Task[] = [
+      {
+        id: '1',
+        title: 'Buy groceries',
+        description: 'Milk, eggs, bread',
+        priority: 'medium',
+        dates: [],
+        status: 'todo',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-01-01',
+      },
+      {
+        id: '2',
+        title: 'Write report',
+        description: 'Q4 financial report',
+        priority: 'high',
+        dates: [],
+        status: 'todo',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-01-01',
+      },
+      {
+        id: '3',
+        title: 'Call dentist',
+        priority: 'low',
+        dates: [],
+        status: 'todo',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-01-01',
+      },
+    ];
+
+    it('should return all tasks when query is empty', () => {
+      expect(searchTasks(tasks, '')).toEqual(tasks);
+    });
+
+    it('should return all tasks when query is whitespace', () => {
+      expect(searchTasks(tasks, '   ')).toEqual(tasks);
+    });
+
+    it('should filter by title', () => {
+      const result = searchTasks(tasks, 'buy');
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('1');
+    });
+
+    it('should filter by description', () => {
+      const result = searchTasks(tasks, 'financial');
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('2');
+    });
+
+    it('should be case insensitive', () => {
+      const result = searchTasks(tasks, 'BUY');
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('1');
+    });
+
+    it('should return empty array when no matches', () => {
+      const result = searchTasks(tasks, 'nonexistent');
+      expect(result).toHaveLength(0);
+    });
+
+    it('should match partial strings', () => {
+      const result = searchTasks(tasks, 'repo');
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('2');
     });
   });
 });

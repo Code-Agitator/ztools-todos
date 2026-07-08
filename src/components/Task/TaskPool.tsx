@@ -5,16 +5,16 @@ import { TaskGroup } from './TaskGroup';
 import { SearchInput } from '../Common/SearchInput';
 import { EmptyState } from '../Common/EmptyState';
 import { isToday } from '../../utils/dateUtils';
-import { getTaskStatus } from '../../utils/taskUtils';
+import { getTaskStatus, searchTasks } from '../../utils/taskUtils';
 
 export function TaskPool() {
   const { state, dispatch } = useAppContext();
   const { addTask, completeTask, deleteTask, getCurrentTasks } = useTasks();
   const [inputValue, setInputValue] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const tasks = getCurrentTasks();
+  const filteredTasks = searchTasks(tasks, state.searchQuery);
 
   // 自动调整 textarea 高度
   useEffect(() => {
@@ -47,23 +47,11 @@ export function TaskPool() {
     dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: null, dropTarget: null } });
   };
 
-  // 过滤任务
-  const filterTasks = (taskList: typeof tasks) => {
-    if (!searchQuery) return taskList;
-    const query = searchQuery.toLowerCase();
-    return taskList.filter(
-      task =>
-        task.title.toLowerCase().includes(query) ||
-        task.description?.toLowerCase().includes(query) ||
-        task.dates.some(date => date.includes(query))
-    );
-  };
-
   // 分组任务
-  const overdueTasks = filterTasks(tasks.filter(t => getTaskStatus(t) === 'overdue'));
-  const todayTasks = filterTasks(tasks.filter(t => t.dates.some(d => isToday(d))));
-  const unscheduledTasks = filterTasks(tasks.filter(t => t.dates.length === 0));
-  const completedTasks = filterTasks(tasks.filter(t => t.status === 'done'));
+  const overdueTasks = filteredTasks.filter(t => getTaskStatus(t) === 'overdue');
+  const todayTasks = filteredTasks.filter(t => t.dates.some(d => isToday(d)));
+  const unscheduledTasks = filteredTasks.filter(t => t.dates.length === 0);
+  const completedTasks = filteredTasks.filter(t => t.status === 'done');
 
   // 计算总任务数（不含已完成）
   const totalCount = overdueTasks.length + todayTasks.length + unscheduledTasks.length;
@@ -76,8 +64,8 @@ export function TaskPool() {
       </div>
       
       <SearchInput
-        value={searchQuery}
-        onChange={setSearchQuery}
+        value={state.searchQuery}
+        onChange={(query) => dispatch({ type: 'SET_SEARCH_QUERY', payload: { query } })}
         placeholder="搜索任务..."
       />
 

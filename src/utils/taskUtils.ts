@@ -107,3 +107,21 @@ export function sortTasksByPriority(tasks: Task[]): Task[] {
 
   return [...tasks].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 }
+
+/**
+ * 搜索任务（全文检索标题和描述）
+ * @param tasks 任务数组
+ * @param query 搜索关键词
+ * @returns 匹配的任务数组
+ */
+export function searchTasks(tasks: Task[], query: string): Task[] {
+  if (!query.trim()) {
+    return tasks;
+  }
+
+  const lowerQuery = query.toLowerCase();
+  return tasks.filter(task =>
+    task.title.toLowerCase().includes(lowerQuery) ||
+    (task.description && task.description.toLowerCase().includes(lowerQuery))
+  );
+}

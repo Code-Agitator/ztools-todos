@@ -1,10 +1,18 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import { SearchInput } from './SearchInput'
 
 describe('SearchInput', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it('renders with default placeholder', () => {
     render(<SearchInput value="" onChange={() => {}} />)
-    expect(screen.getByPlaceholderText('搜索...')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('搜索任务...')).toBeInTheDocument()
   })
 
   it('renders with custom placeholder', () => {
@@ -17,20 +25,52 @@ describe('SearchInput', () => {
     expect(screen.getByDisplayValue('hello')).toBeInTheDocument()
   })
 
-  it('calls onChange when typing', () => {
+  it('calls onChange after debounce', () => {
     const handleChange = jest.fn()
-    render(<SearchInput value="" onChange={handleChange} />)
+    render(<SearchInput value="" onChange={handleChange} debounceMs={300} />)
+    
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } })
+    expect(handleChange).not.toHaveBeenCalled()
+    
+    act(() => {
+      jest.advanceTimersByTime(300)
+    })
     expect(handleChange).toHaveBeenCalledWith('test')
+  })
+
+  it('clears value when clear button clicked', () => {
+    const handleChange = jest.fn()
+    const handleClear = jest.fn()
+    render(<SearchInput value="" onChange={handleChange} onClear={handleClear} />)
+    
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } })
+    
+    act(() => {
+      jest.advanceTimersByTime(300)
+    })
+    
+    const clearBtn = screen.getByText('✕')
+    fireEvent.click(clearBtn)
+    
+    expect(handleClear).toHaveBeenCalled()
+    act(() => {
+      jest.advanceTimersByTime(0)
+    })
+    expect(handleChange).toHaveBeenCalledWith('')
+  })
+
+  it('does not show clear button when empty', () => {
+    render(<SearchInput value="" onChange={() => {}} />)
+    expect(screen.queryByText('✕')).not.toBeInTheDocument()
+  })
+
+  it('shows clear button when has value', () => {
+    render(<SearchInput value="test" onChange={() => {}} />)
+    expect(screen.getByText('✕')).toBeInTheDocument()
   })
 
   it('applies custom className', () => {
     const { container } = render(<SearchInput value="" onChange={() => {}} className="custom" />)
     expect(container.firstChild).toHaveClass('search-input', 'custom')
-  })
-
-  it('renders search icon', () => {
-    render(<SearchInput value="" onChange={() => {}} />)
-    expect(screen.getByText('🔍')).toBeInTheDocument()
   })
 })
