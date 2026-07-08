@@ -4,11 +4,16 @@ import { useAppContext } from '../../context/AppContext';
 import { TaskGroup } from './TaskGroup';
 import { SearchInput } from '../Common/SearchInput';
 import { EmptyState } from '../Common/EmptyState';
-import { isToday } from '../../utils/dateUtils';
+import { isToday, isThisWeek } from '../../utils/dateUtils';
 import { getTaskStatus, searchTasks } from '../../utils/taskUtils';
 import './Task.css';
 
-export function TaskPool() {
+interface TaskPoolProps {
+  hoveredTaskId?: string | null;
+  onHoverTask?: (taskId: string | null) => void;
+}
+
+export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
   const { state, dispatch } = useAppContext();
   const { addTask, completeTask, deleteTask, getCurrentTasks } = useTasks();
   const [inputValue, setInputValue] = useState('');
@@ -49,15 +54,20 @@ export function TaskPool() {
   };
 
   // 使用 useMemo 缓存分组计算
-  const { overdueTasks, todayTasks, unscheduledTasks, completedTasks } = useMemo(() => ({
+  const { overdueTasks, todayTasks, thisWeekTasks, unscheduledTasks, completedTasks } = useMemo(() => ({
     overdueTasks: filteredTasks.filter(t => getTaskStatus(t) === 'overdue'),
     todayTasks: filteredTasks.filter(t => t.dates.some(d => isToday(d))),
+    thisWeekTasks: filteredTasks.filter(t =>
+      t.dates.some(d => isThisWeek(d)) &&
+      !t.dates.some(d => isToday(d)) &&
+      getTaskStatus(t) !== 'overdue'
+    ),
     unscheduledTasks: filteredTasks.filter(t => t.dates.length === 0),
     completedTasks: filteredTasks.filter(t => t.status === 'done')
   }), [filteredTasks]);
 
   // 计算总任务数（不含已完成）
-  const totalCount = overdueTasks.length + todayTasks.length + unscheduledTasks.length;
+  const totalCount = overdueTasks.length + todayTasks.length + thisWeekTasks.length + unscheduledTasks.length;
 
   return (
     <div className="task-pool">
@@ -88,6 +98,8 @@ export function TaskPool() {
               onDelete={deleteTask}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              hoveredTaskId={hoveredTaskId}
+              onHoverTask={onHoverTask}
               showDates
             />
             <TaskGroup
@@ -97,6 +109,19 @@ export function TaskPool() {
               onDelete={deleteTask}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              hoveredTaskId={hoveredTaskId}
+              onHoverTask={onHoverTask}
+              showDates
+            />
+            <TaskGroup
+              title="本周任务"
+              tasks={thisWeekTasks}
+              onComplete={completeTask}
+              onDelete={deleteTask}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              hoveredTaskId={hoveredTaskId}
+              onHoverTask={onHoverTask}
               showDates
             />
             <TaskGroup
@@ -106,6 +131,8 @@ export function TaskPool() {
               onDelete={deleteTask}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              hoveredTaskId={hoveredTaskId}
+              onHoverTask={onHoverTask}
               showDates={false}
             />
             <TaskGroup
@@ -114,6 +141,8 @@ export function TaskPool() {
               onComplete={completeTask}
               onDelete={deleteTask}
               defaultCollapsed
+              hoveredTaskId={hoveredTaskId}
+              onHoverTask={onHoverTask}
               showDates
             />
           </>

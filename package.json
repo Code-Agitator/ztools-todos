@@ -1,7 +1,7 @@
 {
-  "name": "Todos",
+  "name": "ztools-todos",
   "version": "1.0.0",
-  "description": "快捷的友好交互是一个Todo工具的核心，快速将Todo List编排出来，延期任务复活",
+  "description": "高颜值、快捷高效的待办事项管理工具，支持日历视图与拖拽操作",
   "type": "module",
   "scripts": {
     "dev": "vite",

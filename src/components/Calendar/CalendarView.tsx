@@ -6,7 +6,12 @@ import { WeekView } from './WeekView';
 import { MonthView } from './MonthView';
 import './Calendar.css';
 
-export function CalendarView() {
+interface CalendarViewProps {
+  hoveredTaskId?: string | null;
+  onHoverTask?: (taskId: string | null) => void;
+}
+
+export function CalendarView({ hoveredTaskId, onHoverTask }: CalendarViewProps) {
   const { state, dispatch } = useAppContext();
   const { navigatePrev, navigateNext, goToToday, currentDate, viewMode } = useCalendar();
 
@@ -24,7 +29,11 @@ export function CalendarView() {
         onToday={goToToday}
       />
 
-      {viewMode === 'week' ? <WeekView /> : <MonthView />}
+      {viewMode === 'week' ? (
+        <WeekView hoveredTaskId={hoveredTaskId} onHoverTask={onHoverTask} />
+      ) : (
+        <MonthView hoveredTaskId={hoveredTaskId} onHoverTask={onHoverTask} />
+      )}
     </div>
   );
 }

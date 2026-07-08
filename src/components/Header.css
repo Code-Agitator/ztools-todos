@@ -1,69 +1,140 @@
+/* ═══════════════════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════════════════ */
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md);
-  background-color: var(--color-background);
+  justify-content: space-between;
+  padding: 0 var(--sp-4);
+  height: 40px;
   border-bottom: 1px solid var(--color-border);
+  background: var(--paper);
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--sp-6);
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--sp-3);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   LOGO
+   ═══════════════════════════════════════════════════════════ */
+.logo {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WORKSPACE TABS — Signature Element
+   ═══════════════════════════════════════════════════════════ */
+.workspace-tabs {
+  display: flex;
+  gap: 0;
+}
+
+.ws-tab {
+  position: relative;
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--graphite);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.ws-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: var(--sp-3);
+  right: var(--sp-3);
+  height: 2px;
+  background: transparent;
+  border-radius: 1px;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.ws-tab:hover {
+  color: var(--ink);
+}
+
+.ws-tab.active {
+  color: var(--ink);
+}
+
+.ws-tab.active::after {
+  background: var(--teal);
+  left: calc(var(--sp-3) - 4px);
+  right: calc(var(--sp-3) - 4px);
+}
+
+.ws-tab[data-ws="life"].active::after {
+  background: var(--ws-life);
+}
+
+.ws-tab[data-ws="study"].active::after {
+  background: var(--ws-study);
+}
+
+.ws-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-right: var(--sp-1);
+  vertical-align: middle;
+}
+
+.ws-dot.work {
+  background: var(--ws-work);
+}
+
+.ws-dot.life {
+  background: var(--ws-life);
+}
+
+.ws-dot.study {
+  background: var(--ws-study);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VIEW TOGGLE
+   ═══════════════════════════════════════════════════════════ */
 .view-toggle {
   display: flex;
-  background-color: var(--color-background-light);
+  background: rgba(168, 162, 158, 0.15);
   border-radius: var(--radius-md);
-  padding: var(--spacing-xs);
+  padding: 2px;
 }
 
-.view-toggle button {
-  padding: var(--spacing-xs) var(--spacing-sm);
+.view-btn {
+  padding: 2px var(--sp-2);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--graphite);
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-fast);
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
-.view-toggle button.active {
-  background-color: var(--primary-color);
-  color: white;
+.view-btn:hover {
+  color: var(--ink);
 }
 
-.workspace-switcher {
-  display: flex;
-  gap: var(--spacing-xs);
-}
-
-.workspace-switcher .workspace-btn {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  transition: all var(--transition-fast);
-}
-
-.workspace-switcher .workspace-btn.active {
-  border-color: var(--color-text);
-  transform: scale(1.1);
-}
-
-.workspace-switcher .workspace-btn.work {
-  background-color: var(--color-work);
-}
-
-.workspace-switcher .workspace-btn.life {
-  background-color: var(--color-life);
-}
-
-.workspace-switcher .workspace-btn.study {
-  background-color: var(--color-study);
+.view-btn.active {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
 }

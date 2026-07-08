@@ -69,6 +69,25 @@ export function isToday(date: string): boolean {
 }
 
 /**
+ * 判断日期是否在本周（周一到周日）
+ * @param date YYYY-MM-DD 格式的日期字符串
+ * @returns 是否在本周
+ */
+export function isThisWeek(date: string): boolean {
+  const today = new Date();
+  const weekStart = getWeekStart(today);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+
+  const [year, month, day] = date.split('-').map(Number);
+  const targetDate = new Date(year, month - 1, day);
+  targetDate.setHours(0, 0, 0, 0);
+
+  return targetDate >= weekStart && targetDate <= weekEnd;
+}
+
+/**
  * 获取指定日期所在周的周一
  * @param date 日期对象
  * @returns 周一的日期对象

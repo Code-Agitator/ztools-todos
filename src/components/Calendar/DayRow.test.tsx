@@ -15,18 +15,16 @@ const createMockTask = (overrides: Partial<Task> = {}): Task => ({
 });
 
 describe('DayRow', () => {
-  it('renders day name and date', () => {
+  it('renders day name and date number', () => {
     render(
       <DayRow
         date="2026-07-08"
         tasks={[]}
         isToday={false}
-        onComplete={() => {}}
-        onDelete={() => {}}
       />
     );
     expect(screen.getByText('周三')).toBeInTheDocument();
-    expect(screen.getByText('7月8日')).toBeInTheDocument();
+    expect(screen.getByText('8')).toBeInTheDocument();
   });
 
   it('renders today badge when isToday is true', () => {
@@ -35,8 +33,6 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={true}
-        onComplete={() => {}}
-        onDelete={() => {}}
       />
     );
     expect(screen.getByText('今天')).toBeInTheDocument();
@@ -48,14 +44,12 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
-        onComplete={() => {}}
-        onDelete={() => {}}
       />
     );
     expect(screen.queryByText('今天')).not.toBeInTheDocument();
   });
 
-  it('renders tasks', () => {
+  it('renders task chips', () => {
     const tasks = [
       createMockTask({ id: '1', title: 'Task 1' }),
       createMockTask({ id: '2', title: 'Task 2' }),
@@ -65,8 +59,6 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={tasks}
         isToday={false}
-        onComplete={() => {}}
-        onDelete={() => {}}
       />
     );
     expect(screen.getByText('Task 1')).toBeInTheDocument();
@@ -79,25 +71,9 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={true}
-        onComplete={() => {}}
-        onDelete={() => {}}
       />
     );
     expect(container.querySelector('.day-row')).toHaveClass('today');
-  });
-
-  it('applies has-tasks class when there are tasks', () => {
-    const tasks = [createMockTask()];
-    const { container } = render(
-      <DayRow
-        date="2026-07-08"
-        tasks={tasks}
-        isToday={false}
-        onComplete={() => {}}
-        onDelete={() => {}}
-      />
-    );
-    expect(container.querySelector('.day-row')).toHaveClass('has-tasks');
   });
 
   it('sets data-date attribute', () => {
@@ -106,8 +82,6 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
-        onComplete={() => {}}
-        onDelete={() => {}}
       />
     );
     expect(container.querySelector('.day-row')).toHaveAttribute('data-date', '2026-07-08');
@@ -120,8 +94,6 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
-        onComplete={() => {}}
-        onDelete={() => {}}
         onDragOver={handleDragOver}
       />
     );
@@ -137,8 +109,6 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
-        onComplete={() => {}}
-        onDelete={() => {}}
         onDrop={handleDrop}
       />
     );
@@ -154,8 +124,6 @@ describe('DayRow', () => {
         tasks={[]}
         isToday={false}
         dropTarget="2026-07-08"
-        onComplete={() => {}}
-        onDelete={() => {}}
       />
     );
     expect(container.querySelector('.day-row')).toHaveClass('drag-over');
@@ -168,8 +136,6 @@ describe('DayRow', () => {
         tasks={[]}
         isToday={false}
         dropTarget="2026-07-09"
-        onComplete={() => {}}
-        onDelete={() => {}}
       />
     );
     expect(container.querySelector('.day-row')).not.toHaveClass('drag-over');
@@ -182,8 +148,6 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
-        onComplete={() => {}}
-        onDelete={() => {}}
         onDragLeave={handleDragLeave}
       />
     );

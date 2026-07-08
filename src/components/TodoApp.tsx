@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { AppProvider } from '../context/AppContext';
 import { Header } from './Header';
 import { CalendarView } from './Calendar/CalendarView';
@@ -8,6 +8,11 @@ import { useAppContext } from '../context/AppContext';
 
 function TodoAppContent() {
   const { state, dispatch } = useAppContext();
+  const [hoveredTaskId, setHoveredTaskId] = useState<string | null>(null);
+
+  const handleHoverTask = useCallback((taskId: string | null) => {
+    setHoveredTaskId(taskId);
+  }, []);
 
   useKeyboardShortcuts({
     onSearch: () => {
@@ -29,8 +34,8 @@ function TodoAppContent() {
     <div className="todo-app">
       <Header />
       <div className="todo-content">
-        <CalendarView />
-        <TaskPool />
+        <CalendarView hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} />
+        <TaskPool hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} />
       </div>
     </div>
   );

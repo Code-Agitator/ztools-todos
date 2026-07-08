@@ -1,192 +1,288 @@
+/* ═══════════════════════════════════════════════════════════
+   TASK POOL HEADER
+   ═══════════════════════════════════════════════════════════ */
+.task-pool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-4);
+  height: 40px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.task-pool-header h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.task-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--clay);
+  background: rgba(168, 162, 158, 0.12);
+  padding: 1px var(--sp-1);
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TASK POOL CONTENT
+   ═══════════════════════════════════════════════════════════ */
+.task-pool-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-4) var(--sp-5);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TASK GROUP
+   ═══════════════════════════════════════════════════════════ */
+.task-group {
+  margin-bottom: var(--sp-5);
+}
+
+.task-group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+  cursor: pointer;
+  user-select: none;
+}
+
+.task-group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--graphite);
+  letter-spacing: 0.02em;
+}
+
+.task-group-title .arrow {
+  font-size: 10px;
+  color: var(--clay);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.task-group.collapsed .task-group-title .arrow {
+  transform: rotate(-90deg);
+}
+
+.task-group-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--clay);
+  background: rgba(168, 162, 158, 0.12);
+  padding: 0 var(--sp-2);
+  border-radius: var(--radius-sm);
+  line-height: 1.6;
+}
+
+.task-group-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(168, 162, 158, 0.2);
+  margin-left: var(--sp-2);
+}
+
+/* Overdue accent — first group */
+.task-group:first-child .task-group-title {
+  color: var(--rose);
+}
+
+.task-group:first-child .task-group-count {
+  color: var(--rose);
+  background: rgba(225, 29, 72, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TASK LIST
+   ═══════════════════════════════════════════════════════════ */
+.task-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TASK ITEM
+   ═══════════════════════════════════════════════════════════ */
 .task-item {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: white;
+  border: 1px solid rgba(168, 162, 158, 0.2);
   border-radius: var(--radius-md);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--duration-fast) var(--ease-out);
+  position: relative;
 }
 
-.task-item:hover {
-  box-shadow: var(--shadow-sm);
-}
-
-.task-item.selected {
-  border-color: var(--primary-color);
-  box-shadow: var(--shadow-md);
+.task-item:hover,
+.task-item.highlighted {
+  border-color: rgba(168, 162, 158, 0.4);
 }
 
 .task-item.dragging {
-  opacity: 0.5;
-  transform: rotate(2deg) scale(1.02);
-  box-shadow: var(--shadow-lg);
-  z-index: 1000;
-  transition: all var(--transition-fast);
+  opacity: 0.4;
+  transform: rotate(1deg);
 }
 
-.task-item.drag-over {
-  border-color: var(--primary-color);
-  background-color: rgba(var(--primary-color-rgb, 76, 175, 80), 0.1);
-  transform: scale(1.02);
-  transition: all var(--transition-fast);
-}
-
-/* 任务完成动画 */
-.task-item.completing {
-  animation: completeAnimation 0.3s ease forwards;
-}
-
-@keyframes completeAnimation {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(0.95);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
+/* ═══════════════════════════════════════════════════════════
+   TASK CHECKBOX
+   ═══════════════════════════════════════════════════════════ */
 .task-checkbox {
-  animation: checkmark 0.2s ease;
-}
-
-@keyframes checkmark {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.task-item .checkbox {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--color-border);
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--clay);
   border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all var(--duration-fast) var(--ease-out);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
 }
 
-.task-item .checkbox:hover {
-  border-color: var(--primary-color);
+.task-checkbox:hover {
+  border-color: var(--teal);
 }
 
-.task-item .checkbox.checked {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+.task-checkbox:checked {
+  background: var(--teal);
+  border-color: var(--teal);
 }
 
-.task-item .content {
+.task-checkbox:checked::after {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 3px;
+  border-left: 1.5px solid white;
+  border-bottom: 1.5px solid white;
+  transform: rotate(-45deg) translateY(-1px);
+  margin: 2px auto 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRIORITY INDICATOR
+   ═══════════════════════════════════════════════════════════ */
+.priority-indicator {
+  width: 4px;
+  height: 100%;
+  min-height: 24px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 0 2px 2px 0;
+  transition: filter var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.task-item.highlighted .priority-indicator {
+  filter: brightness(1.3);
+  box-shadow: 0 0 10px 3px var(--task-color);
+  width: 5px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TASK CONTENT
+   ═══════════════════════════════════════════════════════════ */
+.task-content {
   flex: 1;
   min-width: 0;
 }
 
-.task-item .title {
-  font-size: var(--font-size-sm);
+.task-title {
+  display: block;
+  font-size: var(--text-base);
   font-weight: 500;
-  margin-bottom: var(--spacing-xs);
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 2px;
 }
 
-.task-item .meta {
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: var(--clay);
+}
+
+.task-description {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--graphite);
+  margin-bottom: 2px;
+}
+
+.task-dates {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--clay);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TASK DELETE BUTTON
+   ═══════════════════════════════════════════════════════════ */
+.task-delete-btn {
+  width: 20px;
+  height: 20px;
   display: flex;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-light);
-}
-
-.task-item .priority {
-  width: 4px;
-  height: 100%;
-  border-radius: var(--radius-sm);
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.task-item .priority.high {
-  background-color: var(--priority-high);
-}
-
-.task-item .priority.medium {
-  background-color: var(--priority-medium);
-}
-
-.task-item .priority.low {
-  background-color: var(--priority-low);
-}
-
-.task-group {
-  margin-bottom: var(--spacing-md);
-}
-
-.task-group .group-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-sm);
-  background-color: var(--color-background-light);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-sm);
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--clay);
+  font-size: var(--text-md);
+  opacity: 0;
+  transition: all var(--duration-fast) var(--ease-out);
+  flex-shrink: 0;
 }
 
-.task-group .group-title {
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-text-secondary);
+.task-item:hover .task-delete-btn {
+  opacity: 1;
 }
 
-.task-group .group-count {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-light);
+.task-delete-btn:hover {
+  background: rgba(225, 29, 72, 0.08);
+  color: var(--rose);
 }
 
-.task-group .group-tasks {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
+/* ═══════════════════════════════════════════════════════════
+   TASK POOL INPUT
+   ═══════════════════════════════════════════════════════════ */
+.task-pool-input {
+  padding: var(--sp-2) var(--sp-4);
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
-.task-pool {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: var(--spacing-md);
-}
-
-.task-pool .search-section {
-  margin-bottom: var(--spacing-md);
-}
-
-.task-pool .tasks-section {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.task-pool .input-section {
-  margin-top: var(--spacing-md);
-}
-
-.task-pool textarea {
+.task-pool-input textarea {
   width: 100%;
-  padding: var(--spacing-sm);
-  border: 1px solid var(--color-border);
+  padding: var(--sp-2) var(--sp-3);
+  background: rgba(168, 162, 158, 0.06);
+  border: 1px solid rgba(168, 162, 158, 0.2);
   border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--ink);
   resize: none;
-  font-size: var(--font-size-sm);
+  min-height: 44px;
+  transition: all var(--duration-fast) var(--ease-out);
+  line-height: 1.5;
 }
 
-.task-pool textarea:focus {
-  border-color: var(--primary-color);
+.task-pool-input textarea::placeholder {
+  color: var(--clay);
+}
+
+.task-pool-input textarea:focus {
+  background: white;
+  border-color: rgba(15, 118, 110, 0.4);
+  box-shadow: 0 0 0 1px rgba(15, 118, 110, 0.1);
 }

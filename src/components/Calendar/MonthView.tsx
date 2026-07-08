@@ -5,7 +5,12 @@ import { useAppContext } from '../../context/AppContext';
 import { DayCell } from './DayCell';
 import { isToday } from '../../utils/dateUtils';
 
-export function MonthView() {
+interface MonthViewProps {
+  hoveredTaskId?: string | null;
+  onHoverTask?: (taskId: string | null) => void;
+}
+
+export function MonthView({ hoveredTaskId, onHoverTask }: MonthViewProps) {
   const { state, dispatch } = useAppContext();
   const { getCurrentMonth } = useCalendar();
   const { getCurrentTasks, completeTask, deleteTask, addDateToTask } = useTasks();
@@ -51,6 +56,8 @@ export function MonthView() {
               isToday={isToday(date)}
               isCurrentMonth={isCurrentMonth}
               dropTarget={state.dropTargetDate}
+              hoveredTaskId={hoveredTaskId}
+              onHoverTask={onHoverTask}
               onComplete={completeTask}
               onDelete={deleteTask}
               onDragOver={(e) => handleDragOver(date, e)}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Task } from '../../types';
 import { formatTaskDates } from '../../utils/taskUtils';
+import { getTaskColor } from '../../utils/colorUtils';
 import './Task.css';
 
 interface TaskItemProps {
@@ -12,6 +13,8 @@ interface TaskItemProps {
   showDates?: boolean;
   isOverdue?: boolean;
   isToday?: boolean;
+  isHighlighted?: boolean;
+  onHover?: (taskId: string | null) => void;
 }
 
 export const TaskItem = React.memo(function TaskItem({
@@ -22,13 +25,11 @@ export const TaskItem = React.memo(function TaskItem({
   onDragEnd,
   showDates = true,
   isOverdue = false,
-  isToday = false
+  isToday = false,
+  isHighlighted,
+  onHover
 }: TaskItemProps) {
-  const priorityColors = {
-    high: '#EF4444',
-    medium: '#F59E0B',
-    low: '#10B981'
-  };
+  const taskColor = getTaskColor(task.id);
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('text/plain', task.id);
@@ -36,12 +37,23 @@ export const TaskItem = React.memo(function TaskItem({
     onDragStart?.(task.id);
   };
 
+  const handleMouseEnter = () => {
+    onHover?.(task.id);
+  };
+
+  const handleMouseLeave = () => {
+    onHover?.(null);
+  };
+
   return (
     <div
-      className={`task-item ${task.status === 'done' ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isToday ? 'today' : ''}`}
+      className={`task-item ${task.status === 'done' ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isToday ? 'today' : ''} ${isHighlighted ? 'highlighted' : ''}`}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{ '--task-color': taskColor } as React.CSSProperties}
     >
       <input
         type="checkbox"
@@ -51,7 +63,7 @@ export const TaskItem = React.memo(function TaskItem({
       />
       <div
         className="priority-indicator"
-        style={{ backgroundColor: priorityColors[task.priority] }}
+        style={{ backgroundColor: taskColor }}
       />
       <div className="task-content">
         <span className="task-title">{task.title}</span>

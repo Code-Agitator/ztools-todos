@@ -11,6 +11,8 @@ interface TaskGroupProps {
   onDragEnd?: () => void;
   defaultCollapsed?: boolean;
   showDates?: boolean;
+  hoveredTaskId?: string | null;
+  onHoverTask?: (taskId: string | null) => void;
 }
 
 export function TaskGroup({
@@ -21,7 +23,9 @@ export function TaskGroup({
   onDragStart,
   onDragEnd,
   defaultCollapsed = false,
-  showDates = true
+  showDates = true,
+  hoveredTaskId,
+  onHoverTask
 }: TaskGroupProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
@@ -52,6 +56,8 @@ export function TaskGroup({
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               showDates={showDates}
+              isHighlighted={hoveredTaskId === task.id}
+              onHover={onHoverTask}
             />
           ))}
         </div>

@@ -1,6 +1,9 @@
 @import './variables.css';
 
-* {
+/* ═══════════════════════════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -9,14 +12,14 @@
 html, body, #root {
   height: 100%;
   width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  font-size: var(--font-size-md);
-  color: var(--color-text);
-  background-color: var(--color-background);
-  line-height: 1.5;
 }
 
 body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--ink);
+  background-color: var(--paper);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -27,7 +30,12 @@ button {
   cursor: pointer;
   border: none;
   background: none;
-  outline: none;
+  color: inherit;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 input, textarea {
@@ -35,6 +43,7 @@ input, textarea {
   font-size: inherit;
   border: none;
   outline: none;
+  color: inherit;
 }
 
 ul, ol {
@@ -46,72 +55,73 @@ a {
   text-decoration: none;
 }
 
-/* 滚动条样式 */
+/* ═══════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════ */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-background-light);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-sm);
+  background: var(--clay);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-light);
+  background: var(--graphite);
 }
 
-/* 全局过渡动画 */
-.fade-enter {
-  opacity: 0;
-  transform: translateY(-10px);
+/* ═══════════════════════════════════════════════════════════
+   FOCUS STATES
+   ═══════════════════════════════════════════════════════════ */
+*:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
 }
 
-.fade-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: all var(--transition-normal);
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT SHELL
+   ═══════════════════════════════════════════════════════════ */
+.todo-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.fade-exit {
-  opacity: 1;
-  transform: translateY(0);
+.todo-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
-.fade-exit-active {
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: all var(--transition-normal);
+/* Calendar Panel — takes remaining space */
+.calendar-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border);
+  overflow: hidden;
+  min-width: 0;
 }
 
-/* 列表动画 */
-.list-item-enter {
-  opacity: 0;
-  transform: translateX(-20px);
+/* Task Panel — fixed width */
+.task-pool {
+  width: 380px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.list-item-enter-active {
-  opacity: 1;
-  transform: translateX(0);
-  transition: all var(--transition-normal);
-}
-
-.list-item-exit {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.list-item-exit-active {
-  opacity: 0;
-  transform: translateX(20px);
-  transition: all var(--transition-normal);
-}
-
-/* 减少动画偏好支持 */
+/* ═══════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -119,5 +129,87 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — Compact mode for narrow plugin windows
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .header {
+    padding: var(--sp-2) var(--sp-3) !important;
+  }
+
+  .header-left {
+    gap: var(--sp-4) !important;
+  }
+
+  .logo {
+    font-size: var(--font-size-lg) !important;
+  }
+
+  .ws-tab {
+    padding: var(--sp-1) var(--sp-2) !important;
+    font-size: var(--font-size-xs) !important;
+  }
+
+  .cal-nav {
+    padding: var(--sp-2) var(--sp-3) !important;
+  }
+
+  .cal-month {
+    font-size: var(--font-size-lg) !important;
+  }
+
+  .week-view {
+    padding: var(--sp-2) var(--sp-3) !important;
+  }
+
+  .day-row {
+    padding: var(--sp-2) var(--sp-3) !important;
+    min-height: 48px !important;
+  }
+
+  .day-name {
+    width: 28px !important;
+    font-size: 10px !important;
+  }
+
+  .day-date {
+    font-size: var(--font-size-base) !important;
+  }
+
+  .day-tasks {
+    padding-left: 36px !important;
+  }
+
+  .task-pool {
+    width: 280px !important;
+    min-width: 240px !important;
+  }
+
+  .task-pool-header {
+    padding: var(--sp-2) var(--sp-3) !important;
+  }
+
+  .task-pool-content {
+    padding: var(--sp-2) var(--sp-3) !important;
+  }
+
+  .task-item {
+    padding: var(--sp-2) var(--sp-3) !important;
+  }
+
+  .task-title {
+    font-size: var(--font-size-sm) !important;
+  }
+
+  .task-pool-input {
+    padding: var(--sp-2) var(--sp-3) !important;
+  }
+
+  .task-pool-input textarea {
+    min-height: 48px !important;
+    font-size: var(--font-size-xs) !important;
   }
 }
