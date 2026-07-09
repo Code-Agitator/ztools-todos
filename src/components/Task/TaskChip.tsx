@@ -85,6 +85,7 @@ export const TaskChip = React.memo(function TaskChip({
           clone.style.opacity = '1';
           clone.style.transform = `translate(${dx}px,${dy}px)`;
         }
+        clone.style.backgroundColor = computedStyle.backgroundColor;
       };
 
       const onMouseMove = (e: MouseEvent) => {

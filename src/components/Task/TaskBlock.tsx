@@ -86,6 +86,7 @@ export const TaskBlock = React.memo(function TaskBlock({
           clone.style.opacity = '1';
           clone.style.transform = `translate(${dx}px,${dy}px)`;
         }
+        clone.style.backgroundColor = computedStyle.backgroundColor;
       };
 
       const onMouseMove = (e: MouseEvent) => {
