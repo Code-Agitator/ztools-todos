@@ -52,7 +52,7 @@
 }
 
 .nav-btn:hover {
-  background: rgba(168, 162, 158, 0.15);
+  background: var(--color-hover-bg);
   color: var(--ink);
 }
 
@@ -61,14 +61,30 @@
   font-size: 10px;
   font-weight: 500;
   color: var(--teal);
-  border: 1px solid rgba(15, 118, 110, 0.3);
+  border: 1px solid var(--teal-border);
   border-radius: var(--radius-sm);
   transition: all var(--duration-fast) var(--ease-out);
 }
 
 .today-btn:hover {
-  background: rgba(15, 118, 110, 0.08);
+  background: var(--teal-muted);
   border-color: var(--teal);
+}
+
+.task-view-toggle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--graphite);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.task-view-toggle:hover {
+  background: var(--color-hover-bg);
+  color: var(--ink);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -102,7 +118,7 @@
   left: var(--sp-3);
   right: var(--sp-3);
   height: 1px;
-  background: rgba(168, 162, 158, 0.2);
+  background: var(--color-divider);
 }
 
 .day-row:hover {
@@ -110,7 +126,7 @@
 }
 
 .day-row.today {
-  border-color: rgba(15, 118, 110, 0.2);
+  border-color: var(--teal-border);
   background: transparent;
 }
 
@@ -138,7 +154,7 @@
   padding: var(--sp-1) 2px;
   background: transparent;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(168, 162, 158, 0.2);
+  border: 1px solid var(--color-border-light);
   box-shadow: none;
 }
 
@@ -186,7 +202,7 @@
   border-radius: 3px;
   letter-spacing: 0.03em;
   white-space: nowrap;
-  box-shadow: 0 1px 3px rgba(15, 118, 110, 0.3);
+  box-shadow: 0 1px 3px var(--teal-border);
   transform: rotate(3deg);
 }
 
@@ -199,14 +215,23 @@
   align-items: flex-start;
 }
 
+.day-tasks.block {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.day-tasks.block .task-block {
+  width: 100%;
+}
+
 /* ═══════════════════════════════════════════════════════════
    TASK CHIP (compact, for calendar)
    ═══════════════════════════════════════════════════════════ */
 .task-chip {
   display: flex;
   align-items: stretch;
-  background: white;
-  border: 1px solid rgba(168, 162, 158, 0.25);
+  background: var(--paper);
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-sm);
   font-size: var(--text-sm);
   color: var(--ink);
@@ -265,7 +290,7 @@
   color: white;
   font-size: 12px;
   background: rgba(225, 29, 72, 0.6);
-  border-left: 1px solid rgba(168, 162, 158, 0.2);
+  border-left: 1px solid var(--color-border-light);
   transition: all var(--duration-fast) var(--ease-out);
   flex-shrink: 0;
   opacity: 0;
@@ -290,12 +315,12 @@
 }
 
 .task-chip.swipe-clone {
-  border: 1px solid rgba(168, 162, 158, 0.25);
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-sm);
-  background: white;
+  background: var(--paper);
   display: flex;
   align-items: stretch;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-light);
 }
 
 .task-chip.swipe-clone .chip-drag-area {
@@ -382,7 +407,7 @@
 .day-cell:hover,
 .day-cell:has(.task-chip:hover) {
   background: transparent;
-  box-shadow: inset 0 0 0 1px rgba(168, 162, 158, 0.15);
+  box-shadow: inset 0 0 0 1px var(--color-border-light);
 }
 
 .day-cell.hovered-week {
@@ -390,7 +415,7 @@
 }
 
 .day-cell.today {
-  border-color: rgba(15, 118, 110, 0.2);
+  border-color: var(--teal-border);
   background: transparent;
 }
 

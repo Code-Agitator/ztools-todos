@@ -98,6 +98,7 @@ a {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 /* Calendar Panel — takes remaining space */

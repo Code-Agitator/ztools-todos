@@ -1,5 +1,6 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from '../Common/Icon';
+import { ChevronLeft, ChevronRight, LayoutGrid, LayoutList } from 'lucide-react';
+import { useAppContext } from '../../context/AppContext';
 
 interface CalendarNavProps {
   currentDate: string;
@@ -10,6 +11,7 @@ interface CalendarNavProps {
 }
 
 export function CalendarNav({ currentDate, viewMode, onPrev, onNext, onToday }: CalendarNavProps) {
+  const { state, dispatch } = useAppContext();
   const date = new Date(currentDate);
   let monthText = '';
   let yearText = '';
@@ -26,6 +28,11 @@ export function CalendarNav({ currentDate, viewMode, onPrev, onNext, onToday }: 
     yearText = String(date.getFullYear());
   }
 
+  const handleTaskViewToggle = () => {
+    const newMode = state.taskViewMode === 'tag' ? 'block' : 'tag';
+    dispatch({ type: 'SET_TASK_VIEW_MODE', payload: { taskViewMode: newMode } });
+  };
+
   return (
     <div className="cal-nav">
       <div className="cal-nav-left">
@@ -33,6 +40,19 @@ export function CalendarNav({ currentDate, viewMode, onPrev, onNext, onToday }: 
         <span className="cal-year">{yearText}</span>
       </div>
       <div className="cal-nav-right">
+        {viewMode === 'week' && (
+          <button 
+            className={`task-view-toggle ${state.taskViewMode}`}
+            onClick={handleTaskViewToggle}
+            title={state.taskViewMode === 'tag' ? '切换到详细视图' : '切换到紧凑视图'}
+          >
+            {state.taskViewMode === 'tag' ? (
+              <LayoutList size={16} />
+            ) : (
+              <LayoutGrid size={16} />
+            )}
+          </button>
+        )}
         <button className="nav-btn" onClick={onPrev} title="上一周">
           <ChevronLeft size={18} />
         </button>

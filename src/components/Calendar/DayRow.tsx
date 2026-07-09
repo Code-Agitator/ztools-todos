@@ -1,11 +1,13 @@
 import React from 'react';
 import { Task } from '../../types';
 import { TaskChip } from '../Task/TaskChip';
+import { TaskBlock } from '../Task/TaskBlock';
 
 interface DayRowProps {
   date: string;
   tasks: Task[];
   isToday: boolean;
+  taskViewMode: 'tag' | 'block';
   dropTarget?: string | null;
   hoveredTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
@@ -18,7 +20,7 @@ interface DayRowProps {
   onDrop?: (e: React.DragEvent) => void;
 }
 
-export function DayRow({ date, tasks, isToday, dropTarget, hoveredTaskId, onHoverTask, onDragStart, onDragEnd, onRemoveDate, onComplete, onDragOver, onDragLeave, onDrop }: DayRowProps) {
+export function DayRow({ date, tasks, isToday, taskViewMode, dropTarget, hoveredTaskId, onHoverTask, onDragStart, onDragEnd, onRemoveDate, onComplete, onDragOver, onDragLeave, onDrop }: DayRowProps) {
   const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   const dateObj = new Date(date);
   const dayName = dayNames[dateObj.getDay()];
@@ -43,18 +45,31 @@ export function DayRow({ date, tasks, isToday, dropTarget, hoveredTaskId, onHove
         </div>
         {isToday && <span className="today-badge">今天</span>}
       </div>
-      <div className="day-tasks">
+      <div className={`day-tasks ${taskViewMode}`}>
         {tasks.map(task => (
-          <TaskChip
-            key={task.id}
-            task={task}
-            isHighlighted={hoveredTaskId === task.id}
-            onHover={onHoverTask}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onRemove={handleRemove}
-            onComplete={onComplete}
-          />
+          taskViewMode === 'tag' ? (
+            <TaskChip
+              key={task.id}
+              task={task}
+              isHighlighted={hoveredTaskId === task.id}
+              onHover={onHoverTask}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              onRemove={handleRemove}
+              onComplete={onComplete}
+            />
+          ) : (
+            <TaskBlock
+              key={task.id}
+              task={task}
+              isHighlighted={hoveredTaskId === task.id}
+              onHover={onHoverTask}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              onRemove={handleRemove}
+              onComplete={onComplete}
+            />
+          )
         ))}
       </div>
     </div>

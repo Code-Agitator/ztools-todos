@@ -21,6 +21,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
+        taskViewMode="tag"
       />
     );
     expect(screen.getByText('周三')).toBeInTheDocument();
@@ -33,6 +34,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={true}
+        taskViewMode="tag"
       />
     );
     expect(screen.getByText('今天')).toBeInTheDocument();
@@ -44,6 +46,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
+        taskViewMode="tag"
       />
     );
     expect(screen.queryByText('今天')).not.toBeInTheDocument();
@@ -59,6 +62,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={tasks}
         isToday={false}
+        taskViewMode="tag"
       />
     );
     expect(screen.getByText('Task 1')).toBeInTheDocument();
@@ -71,6 +75,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={true}
+        taskViewMode="tag"
       />
     );
     expect(container.querySelector('.day-row')).toHaveClass('today');
@@ -82,6 +87,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
+        taskViewMode="tag"
       />
     );
     expect(container.querySelector('.day-row')).toHaveAttribute('data-date', '2026-07-08');
@@ -94,6 +100,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
+        taskViewMode="tag"
         onDragOver={handleDragOver}
       />
     );
@@ -109,6 +116,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
+        taskViewMode="tag"
         onDrop={handleDrop}
       />
     );
@@ -123,6 +131,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
+        taskViewMode="tag"
         dropTarget="2026-07-08"
       />
     );
@@ -135,6 +144,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
+        taskViewMode="tag"
         dropTarget="2026-07-09"
       />
     );
@@ -148,6 +158,7 @@ describe('DayRow', () => {
         date="2026-07-08"
         tasks={[]}
         isToday={false}
+        taskViewMode="tag"
         onDragLeave={handleDragLeave}
       />
     );

@@ -2,9 +2,11 @@
  * 本地存储工具函数
  */
 
-import { StorageData, Workspace } from '../types';
+import { StorageData, Workspace, WorkspaceConfig } from '../types';
+import { DEFAULT_WORKSPACE_CONFIGS } from '../constants/colorSchemes';
 
 const STORAGE_KEY = 'todos-data';
+const WORKSPACE_CONFIG_KEY = 'workspace-configs';
 const CURRENT_VERSION = '1.0.0';
 
 /**
@@ -46,6 +48,36 @@ export function saveData(data: StorageData): void {
 }
 
 /**
+ * 保存工作空间配置到ztools.dbStorage
+ */
+export const saveWorkspaceConfigs = (configs: WorkspaceConfig[]): void => {
+  try {
+    if (window.ztools?.dbStorage) {
+      window.ztools.dbStorage.setItem(WORKSPACE_CONFIG_KEY, JSON.stringify(configs));
+    }
+  } catch (error) {
+    console.error('Failed to save workspace configs:', error);
+  }
+};
+
+/**
+ * 从ztools.dbStorage加载工作空间配置
+ */
+export const loadWorkspaceConfigs = (): WorkspaceConfig[] => {
+  try {
+    if (window.ztools?.dbStorage) {
+      const saved = window.ztools.dbStorage.getItem(WORKSPACE_CONFIG_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load workspace configs:', error);
+  }
+  return DEFAULT_WORKSPACE_CONFIGS;
+};
+
+/**
  * 数据迁移（处理旧版本数据）
  * @param data 任意格式的数据
  * @returns 迁移后的标准 StorageData 对象
@@ -63,6 +95,7 @@ export function migrateData(data: any): StorageData {
     version: CURRENT_VERSION,
     workspaces: validateWorkspaces(data.workspaces),
     currentWorkspace: validateWorkspace(data.currentWorkspace),
+    workspaceConfigs: data.workspaceConfigs || loadWorkspaceConfigs(),
     viewMode: validateViewMode(data.viewMode),
     currentDate: data.currentDate || formatDateForStorage(new Date()),
   };
@@ -77,6 +110,7 @@ function createDefaultData(): StorageData {
     version: CURRENT_VERSION,
     workspaces: { ...DEFAULT_WORKSPACES },
     currentWorkspace: 'work',
+    workspaceConfigs: loadWorkspaceConfigs(),
     viewMode: 'week',
     currentDate: formatDateForStorage(new Date()),
   };
@@ -96,6 +130,10 @@ function migrateToLatest(data: any): StorageData {
 
   if (data.currentWorkspace) {
     migrated.currentWorkspace = validateWorkspace(data.currentWorkspace);
+  }
+
+  if (data.workspaceConfigs) {
+    migrated.workspaceConfigs = data.workspaceConfigs;
   }
 
   if (data.viewMode) {

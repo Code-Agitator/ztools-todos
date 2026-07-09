@@ -1,56 +1,55 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
+import { DEFAULT_WORKSPACE_CONFIGS } from '../constants/colorSchemes';
 
 describe('WorkspaceSwitcher', () => {
-  it('renders current workspace label', () => {
-    render(<WorkspaceSwitcher currentWorkspace="work" onChange={() => {}} />);
+  it('renders workspace buttons', () => {
+    render(
+      <WorkspaceSwitcher
+        configs={DEFAULT_WORKSPACE_CONFIGS}
+        currentWorkspace="work"
+        onChange={() => {}}
+      />
+    );
     expect(screen.getByText('工作')).toBeInTheDocument();
-  });
-
-  it('renders dropdown arrow', () => {
-    render(<WorkspaceSwitcher currentWorkspace="work" onChange={() => {}} />);
-    expect(screen.getByText('▼')).toBeInTheDocument();
-  });
-
-  it('does not show dropdown initially', () => {
-    render(<WorkspaceSwitcher currentWorkspace="work" onChange={() => {}} />);
-    expect(screen.queryByRole('button', { name: '生活' })).not.toBeInTheDocument();
-  });
-
-  it('opens dropdown when button is clicked', () => {
-    render(<WorkspaceSwitcher currentWorkspace="work" onChange={() => {}} />);
-    fireEvent.click(screen.getByText('工作'));
     expect(screen.getByText('生活')).toBeInTheDocument();
     expect(screen.getByText('学习')).toBeInTheDocument();
   });
 
-  it('calls onChange with workspace value and closes dropdown', () => {
+  it('calls onChange when workspace is clicked', () => {
     const handleChange = jest.fn();
-    render(<WorkspaceSwitcher currentWorkspace="work" onChange={handleChange} />);
-    fireEvent.click(screen.getByText('工作'));
+    render(
+      <WorkspaceSwitcher
+        configs={DEFAULT_WORKSPACE_CONFIGS}
+        currentWorkspace="work"
+        onChange={handleChange}
+      />
+    );
     fireEvent.click(screen.getByText('生活'));
     expect(handleChange).toHaveBeenCalledWith('life');
-    expect(screen.queryByText('生活')).not.toBeInTheDocument();
   });
 
-  it('closes dropdown when clicking outside', () => {
+  it('highlights current workspace', () => {
     render(
-      <div>
-        <span data-testid="outside">Outside</span>
-        <WorkspaceSwitcher currentWorkspace="work" onChange={() => {}} />
-      </div>
+      <WorkspaceSwitcher
+        configs={DEFAULT_WORKSPACE_CONFIGS}
+        currentWorkspace="life"
+        onChange={() => {}}
+      />
     );
-    fireEvent.click(screen.getByText('工作'));
-    expect(screen.getByText('生活')).toBeInTheDocument();
-    fireEvent.mouseDown(screen.getByTestId('outside'));
-    expect(screen.queryByText('生活')).not.toBeInTheDocument();
+    const lifeTab = screen.getByText('生活').closest('.ws-tab');
+    expect(lifeTab).toHaveClass('active');
   });
 
-  it('highlights current workspace in dropdown', () => {
-    render(<WorkspaceSwitcher currentWorkspace="work" onChange={() => {}} />);
-    fireEvent.click(screen.getByText('工作'));
-    const workOptions = screen.getAllByText('工作');
-    const dropdownOption = workOptions.find(el => el.closest('.workspace-option'));
-    expect(dropdownOption?.closest('.workspace-option')).toHaveClass('active');
+  it('displays colored squares for each workspace', () => {
+    render(
+      <WorkspaceSwitcher
+        configs={DEFAULT_WORKSPACE_CONFIGS}
+        currentWorkspace="work"
+        onChange={() => {}}
+      />
+    );
+    const squares = document.querySelectorAll('.ws-square');
+    expect(squares.length).toBe(3);
   });
 });

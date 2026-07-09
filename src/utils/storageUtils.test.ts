@@ -1,5 +1,6 @@
 import { StorageData } from '../types';
 import { loadData, saveData, migrateData } from './storageUtils';
+import { DEFAULT_WORKSPACE_CONFIGS } from '../constants/colorSchemes';
 
 describe('storageUtils', () => {
   beforeEach(() => {
@@ -16,6 +17,7 @@ describe('storageUtils', () => {
         version: '1.0.0',
         workspaces: { work: [], life: [], study: [] },
         currentWorkspace: 'work',
+        workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
         viewMode: 'week',
         currentDate: '2024-01-15',
       };
@@ -37,6 +39,7 @@ describe('storageUtils', () => {
         version: '1.0.0',
         workspaces: { work: [], life: [], study: [] },
         currentWorkspace: 'work',
+        workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
         viewMode: 'week',
         currentDate: '2024-01-15',
       };
@@ -75,6 +78,7 @@ describe('storageUtils', () => {
         version: '1.0.0',
         workspaces: { work: [], life: [], study: [] },
         currentWorkspace: 'life',
+        workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
         viewMode: 'month',
         currentDate: '2024-06-01',
       };
@@ -87,6 +91,7 @@ describe('storageUtils', () => {
         version: '1.0.0',
         workspaces: { work: [], life: [], study: [] },
         currentWorkspace: 'invalid',
+        workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
         viewMode: 'week',
         currentDate: '2024-01-01',
       };
@@ -99,6 +104,7 @@ describe('storageUtils', () => {
         version: '1.0.0',
         workspaces: { work: [], life: [], study: [] },
         currentWorkspace: 'work',
+        workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
         viewMode: 'invalid',
         currentDate: '2024-01-01',
       };

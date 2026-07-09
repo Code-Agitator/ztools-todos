@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { AppState, AppAction, Workspace } from '../types';
 import { appReducer, initialState } from '../reducers/appReducer';
-import { loadData, saveData } from '../utils/storageUtils';
+import { loadData, saveData, loadWorkspaceConfigs, saveWorkspaceConfigs } from '../utils/storageUtils';
 import { generateMockData, isDevMode } from '../utils/mockData';
 
 interface AppContextType {
@@ -20,6 +20,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...init,
         workspaces: mockData,
         currentWorkspace: 'work' as Workspace,
+        workspaceConfigs: loadWorkspaceConfigs(),
         viewMode: 'week' as const,
         currentDate: init.currentDate,
       };
@@ -45,6 +46,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         version: '1.0.0',
         workspaces: state.workspaces,
         currentWorkspace: state.currentWorkspace,
+        workspaceConfigs: state.workspaceConfigs,
         viewMode: state.viewMode,
         currentDate: state.currentDate,
       });
@@ -59,6 +61,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     };
   }, [state, debouncedSave]);
+
+  // 保存工作空间配置到ztools.dbStorage
+  useEffect(() => {
+    saveWorkspaceConfigs(state.workspaceConfigs);
+  }, [state.workspaceConfigs]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

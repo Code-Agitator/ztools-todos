@@ -1,5 +1,23 @@
 // 工作空间类型
-export type Workspace = 'work' | 'life' | 'study';
+export type Workspace = string;
+
+// 工作空间配置
+export interface WorkspaceConfig {
+  id: string;
+  name: string;
+  colorScheme: string;
+  order: number;
+}
+
+// 配色方案
+export interface ColorScheme {
+  id: string;
+  name: string;
+  primary: string;
+  secondary: string;
+  light: string;
+  dark: string;
+}
 
 // 任务优先级
 export type Priority = 'high' | 'medium' | 'low';
@@ -24,7 +42,9 @@ export interface Task {
 export interface AppState {
   workspaces: Record<Workspace, Task[]>;
   currentWorkspace: Workspace;
+  workspaceConfigs: WorkspaceConfig[];
   viewMode: 'week' | 'month';
+  taskViewMode: 'tag' | 'block';
   currentDate: string;
   searchQuery: string;
   selectedTaskId: string | null;
@@ -42,16 +62,22 @@ export type AppAction =
   | { type: 'REMOVE_DATE_FROM_TASK'; payload: { taskId: string; date: string } }
   | { type: 'SWITCH_WORKSPACE'; payload: { workspace: Workspace } }
   | { type: 'SET_VIEW_MODE'; payload: { viewMode: 'week' | 'month' } }
+  | { type: 'SET_TASK_VIEW_MODE'; payload: { taskViewMode: 'tag' | 'block' } }
   | { type: 'SET_CURRENT_DATE'; payload: { date: string } }
   | { type: 'SET_SEARCH_QUERY'; payload: { query: string } }
   | { type: 'SET_DRAG_STATE'; payload: { taskId: string | null; dropTarget: string | null } }
-  | { type: 'LOAD_DATA'; payload: { data: Partial<AppState> } };
+  | { type: 'LOAD_DATA'; payload: { data: Partial<AppState> } }
+  | { type: 'UPDATE_WORKSPACE_CONFIGS'; payload: { configs: WorkspaceConfig[] } }
+  | { type: 'ADD_WORKSPACE'; payload: { config: WorkspaceConfig } }
+  | { type: 'REMOVE_WORKSPACE'; payload: { id: string } }
+  | { type: 'UPDATE_WORKSPACE'; payload: { id: string; updates: Partial<WorkspaceConfig> } };
 
 // 存储数据结构
 export interface StorageData {
   version: string;
   workspaces: Record<Workspace, Task[]>;
   currentWorkspace: Workspace;
+  workspaceConfigs: WorkspaceConfig[];
   viewMode: 'week' | 'month';
   currentDate: string;
 }

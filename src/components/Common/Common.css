@@ -33,7 +33,7 @@
 
 .search-input input:focus {
   background: transparent;
-  border-color: rgba(168, 162, 158, 0.3);
+  border-color: var(--color-border);
   box-shadow: none;
 }
 
@@ -99,7 +99,7 @@
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--teal);
-  border: 1px solid rgba(15, 118, 110, 0.3);
+  border: 1px solid var(--teal-border);
   border-radius: var(--radius-sm);
   transition: all var(--duration-fast) var(--ease-out);
 }

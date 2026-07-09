@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Task } from '../../types';
 import { TaskItem } from './TaskItem';
 
@@ -10,6 +10,7 @@ interface TaskGroupProps {
   onDragStart?: (taskId: string) => void;
   onDragEnd?: () => void;
   defaultCollapsed?: boolean;
+  collapsed?: boolean;
   showDates?: boolean;
   hoveredTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
@@ -23,20 +24,38 @@ export function TaskGroup({
   onDragStart,
   onDragEnd,
   defaultCollapsed = false,
+  collapsed,
   showDates = true,
   hoveredTaskId,
   onHoverTask
 }: TaskGroupProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
+  // Sync with controlled collapsed prop
+  useEffect(() => {
+    if (collapsed !== undefined) {
+      setIsCollapsed(collapsed);
+    }
+  }, [collapsed]);
+
   if (tasks.length === 0) {
     return null;
   }
 
-  const isOverdue = title === '逾期任务';
+  // Determine group type for styling
+  const getGroupClass = () => {
+    if (title === '逾期任务') return 'overdue-group';
+    if (title === '今天的任务') return 'today-group';
+    if (title === '本周任务') return 'week-group';
+    if (title === '未安排任务') return 'unscheduled-group';
+    if (title === '已完成任务') return 'completed-group';
+    return '';
+  };
+
+  const groupClass = getGroupClass();
 
   return (
-    <div className={`task-group ${isCollapsed ? 'collapsed' : ''} ${isOverdue ? 'overdue-group' : ''}`}>
+    <div className={`task-group ${isCollapsed ? 'collapsed' : ''} ${groupClass}`}>
       <div
         className="task-group-header"
         onClick={() => setIsCollapsed(!isCollapsed)}

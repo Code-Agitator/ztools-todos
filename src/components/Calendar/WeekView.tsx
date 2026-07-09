@@ -56,6 +56,7 @@ export function WeekView({ hoveredTaskId, onHoverTask }: WeekViewProps) {
             date={dayDate}
             tasks={dayTasks}
             isToday={isToday(dayDate)}
+            taskViewMode={state.taskViewMode}
             dropTarget={state.dropTargetDate}
             hoveredTaskId={hoveredTaskId}
             onHoverTask={onHoverTask}

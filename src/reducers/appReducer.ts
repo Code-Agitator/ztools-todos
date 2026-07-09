@@ -1,4 +1,5 @@
 import { AppState, AppAction } from '../types';
+import { DEFAULT_WORKSPACE_CONFIGS } from '../constants/colorSchemes';
 
 export const initialState: AppState = {
   workspaces: {
@@ -7,7 +8,9 @@ export const initialState: AppState = {
     study: []
   },
   currentWorkspace: 'work',
+  workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
   viewMode: 'week',
+  taskViewMode: 'tag',
   currentDate: new Date().toISOString().split('T')[0],
   searchQuery: '',
   selectedTaskId: null,
@@ -127,6 +130,12 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         viewMode: action.payload.viewMode
       };
     
+    case 'SET_TASK_VIEW_MODE':
+      return {
+        ...state,
+        taskViewMode: action.payload.taskViewMode
+      };
+    
     case 'SET_CURRENT_DATE':
       return {
         ...state,
@@ -150,6 +159,42 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         ...action.payload.data
+      };
+    
+    case 'UPDATE_WORKSPACE_CONFIGS':
+      return {
+        ...state,
+        workspaceConfigs: action.payload.configs
+      };
+    
+    case 'ADD_WORKSPACE':
+      return {
+        ...state,
+        workspaceConfigs: [...state.workspaceConfigs, action.payload.config],
+        workspaces: {
+          ...state.workspaces,
+          [action.payload.config.id]: []
+        }
+      };
+    
+    case 'REMOVE_WORKSPACE': {
+      const { [action.payload.id]: _, ...remainingWorkspaces } = state.workspaces;
+      return {
+        ...state,
+        workspaceConfigs: state.workspaceConfigs.filter(c => c.id !== action.payload.id),
+        workspaces: remainingWorkspaces,
+        currentWorkspace: state.currentWorkspace === action.payload.id
+          ? state.workspaceConfigs[0]?.id || 'work'
+          : state.currentWorkspace
+      };
+    }
+    
+    case 'UPDATE_WORKSPACE':
+      return {
+        ...state,
+        workspaceConfigs: state.workspaceConfigs.map(c =>
+          c.id === action.payload.id ? { ...c, ...action.payload.updates } : c
+        )
       };
     
     default:

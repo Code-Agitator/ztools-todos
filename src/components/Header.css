@@ -92,33 +92,30 @@
   right: calc(var(--sp-3) - 4px);
 }
 
-.ws-tab[data-ws="life"].active::after {
-  background: var(--ws-life);
-}
-
-.ws-tab[data-ws="study"].active::after {
-  background: var(--ws-study);
-}
-
-.ws-dot {
+.ws-square {
   display: inline-block;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
   margin-right: var(--sp-1);
   vertical-align: middle;
 }
 
-.ws-dot.work {
-  background: var(--ws-work);
+/* ═══════════════════════════════════════════════════════════
+   SETTINGS BUTTON
+   ═══════════════════════════════════════════════════════════ */
+.settings-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast) var(--ease-out);
 }
 
-.ws-dot.life {
-  background: var(--ws-life);
-}
-
-.ws-dot.study {
-  background: var(--ws-study);
+.settings-btn:hover {
+  background: var(--color-background-light);
 }
 
 /* ═══════════════════════════════════════════════════════════

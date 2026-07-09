@@ -3,6 +3,7 @@ import { AppProvider } from '../context/AppContext';
 import { Header } from './Header';
 import { CalendarView } from './Calendar/CalendarView';
 import { TaskPool } from './Task/TaskPool';
+import { WorkspaceGradient } from './WorkspaceGradient';
 import { DevRefreshButton } from './DevRefreshButton';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useAppContext } from '../context/AppContext';
@@ -37,6 +38,7 @@ function TodoAppContent() {
       <div className="todo-content">
         <CalendarView hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} />
         <TaskPool hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} />
+        <WorkspaceGradient />
       </div>
       <DevRefreshButton />
     </div>

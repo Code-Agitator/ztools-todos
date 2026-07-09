@@ -1,29 +1,35 @@
 import React from 'react';
-import { Workspace } from '../types';
+import { WorkspaceConfig } from '../types';
+import { COLOR_SCHEMES } from '../constants/colorSchemes';
 
 interface WorkspaceSwitcherProps {
-  currentWorkspace: Workspace;
-  onChange: (workspace: Workspace) => void;
+  configs: WorkspaceConfig[];
+  currentWorkspace: string;
+  onChange: (workspace: string) => void;
 }
 
-const workspaces: { value: Workspace; label: string }[] = [
-  { value: 'work', label: '工作' },
-  { value: 'life', label: '生活' },
-  { value: 'study', label: '学习' }
-];
+export function WorkspaceSwitcher({ configs, currentWorkspace, onChange }: WorkspaceSwitcherProps) {
+  const sortedConfigs = [...configs].sort((a, b) => a.order - b.order);
 
-export function WorkspaceSwitcher({ currentWorkspace, onChange }: WorkspaceSwitcherProps) {
+  const getColorForScheme = (schemeId: string) => {
+    const scheme = COLOR_SCHEMES.find(s => s.id === schemeId);
+    return scheme?.primary || '#0F766E';
+  };
+
   return (
     <nav className="workspace-tabs">
-      {workspaces.map(workspace => (
+      {sortedConfigs.map(config => (
         <button
-          key={workspace.value}
-          className={`ws-tab ${currentWorkspace === workspace.value ? 'active' : ''}`}
-          data-ws={workspace.value}
-          onClick={() => onChange(workspace.value)}
+          key={config.id}
+          className={`ws-tab ${currentWorkspace === config.id ? 'active' : ''}`}
+          data-ws={config.id}
+          onClick={() => onChange(config.id)}
         >
-          <span className={`ws-dot ${workspace.value}`}></span>
-          {workspace.label}
+          <span
+            className="ws-square"
+            style={{ backgroundColor: getColorForScheme(config.colorScheme) }}
+          ></span>
+          {config.name}
         </button>
       ))}
     </nav>
