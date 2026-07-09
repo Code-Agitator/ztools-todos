@@ -53,6 +53,10 @@ export const TaskItem = React.memo(function TaskItem({
 
       const clone = item.cloneNode(true) as HTMLDivElement;
       const bar = clone.querySelector('.priority-indicator') as HTMLElement;
+      const rootStyle = window.getComputedStyle(document.documentElement);
+      const paperColor = rootStyle.getPropertyValue('--paper').trim();
+      const borderLight = rootStyle.getPropertyValue('--color-border-light').trim();
+      if (bar) bar.style.background = taskColor;
       Object.assign(clone.style, {
         position: 'fixed',
         left: rect.x + 'px',
@@ -62,7 +66,8 @@ export const TaskItem = React.memo(function TaskItem({
         zIndex: '9999',
         pointerEvents: 'none',
         margin: '0',
-        background: 'white',
+        background: paperColor,
+        borderColor: borderLight,
         willChange: 'transform',
       });
       document.body.appendChild(clone);
@@ -86,16 +91,16 @@ export const TaskItem = React.memo(function TaskItem({
           if (bar) bar.style.background = '#10b981';
         } else if (dx < -2) {
           const p = Math.min(-dx / threshold, 1);
-          clone.style.opacity = String(1 - p * 0.7);
+          clone.style.opacity = String(1 - p * 0.3);
           clone.style.transform = `translate(${dx}px,${dy}px) scale(${1 - p * 0.1})`;
-          clone.style.borderColor = 'rgba(168, 162, 158, 0.25)';
-          if (bar) bar.style.background = '';
+          clone.style.borderColor = borderLight;
+          if (bar) bar.style.background = taskColor;
         } else {
-          clone.style.background = 'white';
-          clone.style.borderColor = 'rgba(168,162,158,0.25)';
+          clone.style.background = paperColor;
+          clone.style.borderColor = borderLight;
           clone.style.opacity = '1';
           clone.style.transform = `translate(${dx}px,${dy}px)`;
-          if (bar) bar.style.background = '';
+          if (bar) bar.style.background = taskColor;
         }
       };
 

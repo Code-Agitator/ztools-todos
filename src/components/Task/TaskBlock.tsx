@@ -45,7 +45,11 @@ export const TaskBlock = React.memo(function TaskBlock({
       const threshold = 40;
 
       const clone = block.cloneNode(true) as HTMLDivElement;
-      const computedStyle = window.getComputedStyle(block);
+      const bar = clone.querySelector('.priority-bar') as HTMLElement;
+      const rootStyle = window.getComputedStyle(document.documentElement);
+      const paperColor = rootStyle.getPropertyValue('--paper').trim();
+      const borderColorVal = rootStyle.getPropertyValue('--color-border-light').trim();
+      if (bar) bar.style.background = taskColor;
       Object.assign(clone.style, {
         position: 'fixed',
         left: rect.x + 'px',
@@ -55,8 +59,8 @@ export const TaskBlock = React.memo(function TaskBlock({
         zIndex: '9999',
         pointerEvents: 'none',
         margin: '0',
-        backgroundColor: computedStyle.backgroundColor,
-        borderColor: computedStyle.borderColor,
+        background: paperColor,
+        borderColor: borderColorVal,
         willChange: 'transform',
       });
       document.body.appendChild(clone);
@@ -73,20 +77,24 @@ export const TaskBlock = React.memo(function TaskBlock({
 
         if (dx > 2) {
           const p = Math.min(dx / threshold, 1);
-          clone.style.boxShadow = `inset 0 0 0 100px rgba(16,185,129,${0.05 + p * 0.25})`;
+          clone.style.background = `rgba(16,185,129,${0.05 + p * 0.35})`;
+          clone.style.borderColor = `rgba(16,185,129,${0.15 + p * 0.5})`;
           clone.style.opacity = '1';
           clone.style.transform = `translate(${dx}px,${dy}px)`;
+          if (bar) bar.style.background = '#10b981';
         } else if (dx < -2) {
           const p = Math.min(-dx / threshold, 1);
-          clone.style.opacity = String(1 - p * 0.7);
+          clone.style.opacity = String(1 - p * 0.3);
           clone.style.transform = `translate(${dx}px,${dy}px) scale(${1 - p * 0.1})`;
-          clone.style.boxShadow = 'none';
+          clone.style.borderColor = borderColorVal;
+          if (bar) bar.style.background = taskColor;
         } else {
-          clone.style.boxShadow = 'none';
+          clone.style.background = paperColor;
+          clone.style.borderColor = borderColorVal;
           clone.style.opacity = '1';
           clone.style.transform = `translate(${dx}px,${dy}px)`;
+          if (bar) bar.style.background = taskColor;
         }
-        clone.style.backgroundColor = computedStyle.backgroundColor;
       };
 
       const onMouseMove = (e: MouseEvent) => {
