@@ -197,6 +197,12 @@ export function appReducer(state: AppState, action: AppAction): AppState {
         )
       };
     
+    case 'SET_SELECTED_TASK':
+      return {
+        ...state,
+        selectedTaskId: action.payload.taskId === state.selectedTaskId ? null : action.payload.taskId
+      };
+    
     default:
       return state;
   }

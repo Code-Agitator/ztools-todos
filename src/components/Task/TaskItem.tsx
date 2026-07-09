@@ -14,7 +14,9 @@ interface TaskItemProps {
   isOverdue?: boolean;
   isToday?: boolean;
   isHighlighted?: boolean;
+  isSelected?: boolean;
   onHover?: (taskId: string | null) => void;
+  onSelect?: (taskId: string) => void;
 }
 
 export const TaskItem = React.memo(function TaskItem({
@@ -27,7 +29,9 @@ export const TaskItem = React.memo(function TaskItem({
   isOverdue = false,
   isToday = false,
   isHighlighted,
-  onHover
+  isSelected,
+  onHover,
+  onSelect
 }: TaskItemProps) {
   const taskColor = getTaskColor(task.id);
   const itemRef = useRef<HTMLDivElement>(null);
@@ -175,10 +179,12 @@ export const TaskItem = React.memo(function TaskItem({
   return (
     <div
       ref={itemRef}
-      className={`task-item ${task.status === 'done' ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isToday ? 'today' : ''} ${isHighlighted ? 'highlighted' : ''}`}
+      data-task-id={task.id}
+      className={`task-item ${task.status === 'done' ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isToday ? 'today' : ''} ${isHighlighted ? 'highlighted' : ''} ${isSelected ? 'selected' : ''}`}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
+      onClick={(e) => { if (e.button === 0) onSelect?.(task.id); }}
       onMouseEnter={() => onHover?.(task.id)}
       onMouseLeave={() => onHover?.(null)}
       style={{ '--task-color': taskColor } as React.CSSProperties}

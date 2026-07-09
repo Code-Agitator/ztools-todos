@@ -16,6 +16,10 @@ function TodoAppContent() {
     setHoveredTaskId(taskId);
   }, []);
 
+  const handleSelectTask = useCallback((taskId: string) => {
+    dispatch({ type: 'SET_SELECTED_TASK', payload: { taskId } });
+  }, [dispatch]);
+
   useKeyboardShortcuts({
     onSearch: () => {
       const searchInput = document.querySelector('.search-input input') as HTMLInputElement;
@@ -36,7 +40,7 @@ function TodoAppContent() {
     <div className="todo-app">
       <Header />
       <div className="todo-content">
-        <CalendarView hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} />
+        <CalendarView hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} onSelectTask={handleSelectTask} />
         <TaskPool hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} />
         <WorkspaceGradient />
       </div>

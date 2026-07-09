@@ -10,6 +10,7 @@ interface TaskChipProps {
   onDragEnd?: () => void;
   onRemove?: (taskId: string) => void;
   onComplete?: (taskId: string) => void;
+  onSelect?: (taskId: string) => void;
 }
 
 export const TaskChip = React.memo(function TaskChip({
@@ -19,7 +20,8 @@ export const TaskChip = React.memo(function TaskChip({
   onDragStart,
   onDragEnd,
   onRemove,
-  onComplete
+  onComplete,
+  onSelect
 }: TaskChipProps) {
   const taskColor = getTaskColor(task.id);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -167,8 +169,10 @@ export const TaskChip = React.memo(function TaskChip({
   return (
     <div
       ref={chipRef}
+      data-task-id={task.id}
       className={`task-chip ${task.status === 'done' ? 'done' : ''} ${isHighlighted ? 'highlighted' : ''}`}
       style={{ '--task-color': taskColor } as React.CSSProperties}
+      onClick={(e) => { if (e.button === 0) onSelect?.(task.id); }}
       onMouseEnter={() => onHover?.(task.id)}
       onMouseLeave={() => onHover?.(null)}
     >

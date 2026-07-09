@@ -18,6 +18,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
   const { addTask, completeTask, deleteTask, getCurrentTasks } = useTasks();
   const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   
   // Refs for task groups
   const overdueRef = useRef<HTMLDivElement>(null);
@@ -101,6 +102,58 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
     }
   }, []);
 
+  // Scroll to selected task when selectedTaskId changes
+  useEffect(() => {
+    const taskId = state.selectedTaskId;
+    if (!taskId) return;
+
+    let groupType: string | null = null;
+    if (overdueTasks.some(t => t.id === taskId)) groupType = 'overdue';
+    else if (todayTasks.some(t => t.id === taskId)) groupType = 'today';
+    else if (thisWeekTasks.some(t => t.id === taskId)) groupType = 'week';
+    else if (unscheduledTasks.some(t => t.id === taskId)) groupType = 'unscheduled';
+    else if (completedTasks.some(t => t.id === taskId)) groupType = 'completed';
+
+    if (!groupType) return;
+
+    if (!expandedGroups[groupType]) {
+      setExpandedGroups(prev => ({ ...prev, [groupType!]: true }));
+    }
+
+    const scrollToEl = () => {
+      const container = contentRef.current;
+      if (!container) return false;
+      const el = container.querySelector(`[data-task-id="${taskId}"]`) as HTMLElement | null;
+      if (!el) return false;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return true;
+    };
+
+    if (scrollToEl()) return;
+
+    let resolved = false;
+    const onMutate = () => {
+      if (resolved) return;
+      if (scrollToEl()) {
+        resolved = true;
+        observer.disconnect();
+      }
+    };
+
+    const container = contentRef.current;
+    if (!container) return;
+    const observer = new MutationObserver(onMutate);
+    observer.observe(container, { childList: true, subtree: true });
+
+    requestAnimationFrame(() => {
+      if (!resolved) onMutate();
+    });
+
+    const timer = setTimeout(() => { resolved = true; observer.disconnect(); }, 3000);
+    return () => { clearTimeout(timer); resolved = true; observer.disconnect(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.selectedTaskId]);
+
   return (
     <div className="task-pool">
       <div className="task-pool-header">
@@ -149,7 +202,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
         </div>
       </div>
 
-      <div className="task-pool-content">
+      <div className="task-pool-content" ref={contentRef}>
         {tasks.length === 0 ? (
           <EmptyState
             icon={FileText}
@@ -167,7 +220,9 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 hoveredTaskId={hoveredTaskId}
+                selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, overdue: !prev.overdue }))}
                 showDates
                 collapsed={!expandedGroups.overdue}
               />
@@ -181,7 +236,9 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 hoveredTaskId={hoveredTaskId}
+                selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, today: !prev.today }))}
                 showDates
                 collapsed={!expandedGroups.today}
               />
@@ -195,7 +252,9 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 hoveredTaskId={hoveredTaskId}
+                selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, week: !prev.week }))}
                 showDates
                 collapsed={!expandedGroups.week}
               />
@@ -209,7 +268,9 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 hoveredTaskId={hoveredTaskId}
+                selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, unscheduled: !prev.unscheduled }))}
                 showDates={false}
                 collapsed={!expandedGroups.unscheduled}
               />
@@ -222,7 +283,9 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 onDelete={deleteTask}
                 collapsed={!expandedGroups.completed}
                 hoveredTaskId={hoveredTaskId}
+                selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, completed: !prev.completed }))}
                 showDates
               />
             </div>

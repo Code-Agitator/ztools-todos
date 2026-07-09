@@ -8,9 +8,10 @@ import { isToday } from '../../utils/dateUtils';
 interface WeekViewProps {
   hoveredTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
+  onSelectTask?: (taskId: string) => void;
 }
 
-export function WeekView({ hoveredTaskId, onHoverTask }: WeekViewProps) {
+export function WeekView({ hoveredTaskId, onHoverTask, onSelectTask }: WeekViewProps) {
   const { state, dispatch } = useAppContext();
   const { getCurrentWeek } = useCalendar();
   const { getCurrentTasks, addDateToTask, removeDateFromTask, completeTask } = useTasks();
@@ -59,7 +60,9 @@ export function WeekView({ hoveredTaskId, onHoverTask }: WeekViewProps) {
             taskViewMode={state.taskViewMode}
             dropTarget={state.dropTargetDate}
             hoveredTaskId={hoveredTaskId}
+            selectedTaskId={state.selectedTaskId}
             onHoverTask={onHoverTask}
+            onSelectTask={onSelectTask}
             onRemoveDate={handleRemoveDate}
             onComplete={handleComplete}
             onDragOver={(e) => handleDragOver(dayDate, e)}

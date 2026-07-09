@@ -242,6 +242,11 @@
   border-color: var(--color-border-hover);
 }
 
+.task-item.selected {
+  border-color: var(--task-color);
+  box-shadow: 0 0 0 1px var(--task-color);
+}
+
 .task-item.dragging {
   opacity: 0.4;
   transform: rotate(1deg);

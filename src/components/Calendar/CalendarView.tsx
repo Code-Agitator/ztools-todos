@@ -9,9 +9,10 @@ import './Calendar.css';
 interface CalendarViewProps {
   hoveredTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
+  onSelectTask?: (taskId: string) => void;
 }
 
-export function CalendarView({ hoveredTaskId, onHoverTask }: CalendarViewProps) {
+export function CalendarView({ hoveredTaskId, onHoverTask, onSelectTask }: CalendarViewProps) {
   const { state, dispatch } = useAppContext();
   const { navigatePrev, navigateNext, goToToday, currentDate, viewMode } = useCalendar();
 
@@ -35,11 +36,12 @@ export function CalendarView({ hoveredTaskId, onHoverTask }: CalendarViewProps) 
       />
 
       {viewMode === 'week' ? (
-        <WeekView hoveredTaskId={hoveredTaskId} onHoverTask={onHoverTask} />
+        <WeekView hoveredTaskId={hoveredTaskId} onHoverTask={onHoverTask} onSelectTask={onSelectTask} />
       ) : (
         <MonthView
           hoveredTaskId={hoveredTaskId}
           onHoverTask={onHoverTask}
+          onSelectTask={onSelectTask}
           onDateClick={handleDateClick}
         />
       )}

@@ -41,56 +41,42 @@ describe('TaskGroup', () => {
     expect(container.innerHTML).toBe('');
   });
 
-  it('collapses when header is clicked', () => {
+  it('hides tasks when collapsed', () => {
     const tasks = [createMockTask({ id: '1', title: 'Task 1' })];
-    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} />);
-    
-    fireEvent.click(screen.getByText('Today'));
+    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} collapsed />);
     expect(screen.queryByText('Task 1')).not.toBeInTheDocument();
   });
 
-  it('expands when collapsed header is clicked', () => {
+  it('shows tasks when not collapsed', () => {
     const tasks = [createMockTask({ id: '1', title: 'Task 1' })];
-    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} />);
-    
-    fireEvent.click(screen.getByText('Today'));
-    expect(screen.queryByText('Task 1')).not.toBeInTheDocument();
-    
-    fireEvent.click(screen.getByText('Today'));
+    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} collapsed={false} />);
     expect(screen.getByText('Task 1')).toBeInTheDocument();
   });
 
-  it('starts collapsed when defaultCollapsed is true', () => {
+  it('calls onToggleCollapse when header is clicked', () => {
+    const onToggle = jest.fn();
     const tasks = [createMockTask({ id: '1', title: 'Task 1' })];
-    render(<TaskGroup title="Done" tasks={tasks} onComplete={() => {}} onDelete={() => {}} defaultCollapsed />);
-    expect(screen.queryByText('Task 1')).not.toBeInTheDocument();
-  });
-
-  it('starts expanded when defaultCollapsed is false', () => {
-    const tasks = [createMockTask({ id: '1', title: 'Task 1' })];
-    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} defaultCollapsed={false} />);
-    expect(screen.getByText('Task 1')).toBeInTheDocument();
+    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} onToggleCollapse={onToggle} />);
+    
+    fireEvent.click(screen.getByText('Today'));
+    expect(onToggle).toHaveBeenCalledTimes(1);
   });
 
   it('applies collapsed class when collapsed', () => {
     const tasks = [createMockTask()];
-    const { container } = render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} />);
-    
-    fireEvent.click(screen.getByText('Today'));
+    const { container } = render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} collapsed />);
     expect(container.querySelector('.task-group')).toHaveClass('collapsed');
   });
 
   it('shows arrow pointing right when collapsed', () => {
     const tasks = [createMockTask()];
-    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} />);
-    
-    fireEvent.click(screen.getByText('Today'));
+    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} collapsed />);
     expect(screen.getByText('▶')).toBeInTheDocument();
   });
 
   it('shows arrow pointing down when expanded', () => {
     const tasks = [createMockTask()];
-    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} />);
+    render(<TaskGroup title="Today" tasks={tasks} onComplete={() => {}} onDelete={() => {}} collapsed={false} />);
     expect(screen.getByText('▼')).toBeInTheDocument();
   });
 

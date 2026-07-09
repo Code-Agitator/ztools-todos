@@ -11,6 +11,7 @@ interface TaskBlockProps {
   onDragEnd?: () => void;
   onRemove?: (taskId: string) => void;
   onComplete?: (taskId: string) => void;
+  onSelect?: (taskId: string) => void;
 }
 
 export const TaskBlock = React.memo(function TaskBlock({
@@ -20,7 +21,8 @@ export const TaskBlock = React.memo(function TaskBlock({
   onDragStart,
   onDragEnd,
   onRemove,
-  onComplete
+  onComplete,
+  onSelect
 }: TaskBlockProps) {
   const taskColor = getTaskColor(task.id);
   const blockRef = useRef<HTMLDivElement>(null);
@@ -168,8 +170,10 @@ export const TaskBlock = React.memo(function TaskBlock({
   return (
     <div
       ref={blockRef}
+      data-task-id={task.id}
       className={`task-block ${task.status === 'done' ? 'done' : ''} ${isHighlighted ? 'highlighted' : ''}`}
       style={{ '--task-color': taskColor } as React.CSSProperties}
+      onClick={(e) => { if (e.button === 0) onSelect?.(task.id); }}
       onMouseEnter={() => onHover?.(task.id)}
       onMouseLeave={() => onHover?.(null)}
     >

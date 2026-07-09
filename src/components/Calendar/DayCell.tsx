@@ -10,7 +10,9 @@ interface DayCellProps {
   isHoveredWeek?: boolean;
   dropTarget?: string | null;
   hoveredTaskId?: string | null;
+  selectedTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
+  onSelectTask?: (taskId: string) => void;
   onComplete: (taskId: string) => void;
   onDelete: (taskId: string) => void;
   onDragStart?: (taskId: string) => void;
@@ -24,7 +26,7 @@ interface DayCellProps {
   onMouseLeave?: () => void;
 }
 
-export function DayCell({ date, tasks, isToday, isCurrentMonth, isHoveredWeek, dropTarget, hoveredTaskId, onHoverTask, onComplete, onDelete, onDragStart, onDragEnd, onRemoveDate, onDragOver, onDragLeave, onDrop, onClick, onMouseEnter, onMouseLeave }: DayCellProps) {
+export function DayCell({ date, tasks, isToday, isCurrentMonth, isHoveredWeek, dropTarget, hoveredTaskId, selectedTaskId, onHoverTask, onSelectTask, onComplete, onDelete, onDragStart, onDragEnd, onRemoveDate, onDragOver, onDragLeave, onDrop, onClick, onMouseEnter, onMouseLeave }: DayCellProps) {
   const dateObj = new Date(date);
   const dayNum = dateObj.getDate();
 
@@ -53,6 +55,7 @@ export function DayCell({ date, tasks, isToday, isCurrentMonth, isHoveredWeek, d
             task={task}
             isHighlighted={hoveredTaskId === task.id}
             onHover={onHoverTask}
+            onSelect={onSelectTask}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             onRemove={handleRemove}

@@ -70,7 +70,8 @@ export type AppAction =
   | { type: 'UPDATE_WORKSPACE_CONFIGS'; payload: { configs: WorkspaceConfig[] } }
   | { type: 'ADD_WORKSPACE'; payload: { config: WorkspaceConfig } }
   | { type: 'REMOVE_WORKSPACE'; payload: { id: string } }
-  | { type: 'UPDATE_WORKSPACE'; payload: { id: string; updates: Partial<WorkspaceConfig> } };
+  | { type: 'UPDATE_WORKSPACE'; payload: { id: string; updates: Partial<WorkspaceConfig> } }
+  | { type: 'SET_SELECTED_TASK'; payload: { taskId: string | null } };
 
 // 存储数据结构
 export interface StorageData {

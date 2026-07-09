@@ -8,10 +8,11 @@ import { isToday } from '../../utils/dateUtils';
 interface MonthViewProps {
   hoveredTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
+  onSelectTask?: (taskId: string) => void;
   onDateClick?: (date: string) => void;
 }
 
-export function MonthView({ hoveredTaskId, onHoverTask, onDateClick }: MonthViewProps) {
+export function MonthView({ hoveredTaskId, onHoverTask, onSelectTask, onDateClick }: MonthViewProps) {
   const { state, dispatch } = useAppContext();
   const { getCurrentMonth } = useCalendar();
   const { getCurrentTasks, completeTask, deleteTask, addDateToTask, removeDateFromTask } = useTasks();
@@ -94,8 +95,10 @@ export function MonthView({ hoveredTaskId, onHoverTask, onDateClick }: MonthView
               isCurrentMonth={isCurrentMonth}
               dropTarget={state.dropTargetDate}
               hoveredTaskId={hoveredTaskId}
+              selectedTaskId={state.selectedTaskId}
               isHoveredWeek={isHoveredWeek}
               onHoverTask={onHoverTask}
+              onSelectTask={onSelectTask}
               onComplete={completeTask}
               onDelete={deleteTask}
               onDragStart={handleDragStart}

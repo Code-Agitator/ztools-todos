@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Task } from '../../types';
 import { TaskItem } from './TaskItem';
 
@@ -9,11 +9,13 @@ interface TaskGroupProps {
   onDelete: (taskId: string) => void;
   onDragStart?: (taskId: string) => void;
   onDragEnd?: () => void;
-  defaultCollapsed?: boolean;
   collapsed?: boolean;
+  onToggleCollapse?: () => void;
   showDates?: boolean;
   hoveredTaskId?: string | null;
+  selectedTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
+  onSelectTask?: (taskId: string) => void;
 }
 
 export function TaskGroup({
@@ -23,21 +25,14 @@ export function TaskGroup({
   onDelete,
   onDragStart,
   onDragEnd,
-  defaultCollapsed = false,
-  collapsed,
+  collapsed = false,
+  onToggleCollapse,
   showDates = true,
   hoveredTaskId,
-  onHoverTask
+  selectedTaskId,
+  onHoverTask,
+  onSelectTask
 }: TaskGroupProps) {
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
-
-  // Sync with controlled collapsed prop
-  useEffect(() => {
-    if (collapsed !== undefined) {
-      setIsCollapsed(collapsed);
-    }
-  }, [collapsed]);
-
   if (tasks.length === 0) {
     return null;
   }
@@ -55,18 +50,18 @@ export function TaskGroup({
   const groupClass = getGroupClass();
 
   return (
-    <div className={`task-group ${isCollapsed ? 'collapsed' : ''} ${groupClass}`}>
+    <div className={`task-group ${collapsed ? 'collapsed' : ''} ${groupClass}`}>
       <div
         className="task-group-header"
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={onToggleCollapse}
       >
         <span className="task-group-title">
-          <span className="arrow">{isCollapsed ? '▶' : '▼'}</span>
+          <span className="arrow">{collapsed ? '▶' : '▼'}</span>
           {title}
         </span>
         <span className="task-group-count">{tasks.length}</span>
       </div>
-      {!isCollapsed && (
+      {!collapsed && (
         <div className="task-group-list">
           {tasks.map(task => (
             <TaskItem
@@ -78,7 +73,9 @@ export function TaskGroup({
               onDragEnd={onDragEnd}
               showDates={showDates}
               isHighlighted={hoveredTaskId === task.id}
+              isSelected={selectedTaskId === task.id}
               onHover={onHoverTask}
+              onSelect={onSelectTask}
             />
           ))}
         </div>

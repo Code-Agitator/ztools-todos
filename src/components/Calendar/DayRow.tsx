@@ -10,7 +10,9 @@ interface DayRowProps {
   taskViewMode: 'tag' | 'block';
   dropTarget?: string | null;
   hoveredTaskId?: string | null;
+  selectedTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
+  onSelectTask?: (taskId: string) => void;
   onDragStart?: (taskId: string) => void;
   onDragEnd?: () => void;
   onRemoveDate?: (taskId: string, date: string) => void;
@@ -20,7 +22,7 @@ interface DayRowProps {
   onDrop?: (e: React.DragEvent) => void;
 }
 
-export function DayRow({ date, tasks, isToday, taskViewMode, dropTarget, hoveredTaskId, onHoverTask, onDragStart, onDragEnd, onRemoveDate, onComplete, onDragOver, onDragLeave, onDrop }: DayRowProps) {
+export function DayRow({ date, tasks, isToday, taskViewMode, dropTarget, hoveredTaskId, selectedTaskId, onHoverTask, onSelectTask, onDragStart, onDragEnd, onRemoveDate, onComplete, onDragOver, onDragLeave, onDrop }: DayRowProps) {
   const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   const dateObj = new Date(date);
   const dayName = dayNames[dateObj.getDay()];
@@ -53,6 +55,7 @@ export function DayRow({ date, tasks, isToday, taskViewMode, dropTarget, hovered
               task={task}
               isHighlighted={hoveredTaskId === task.id}
               onHover={onHoverTask}
+              onSelect={onSelectTask}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               onRemove={handleRemove}
@@ -64,6 +67,7 @@ export function DayRow({ date, tasks, isToday, taskViewMode, dropTarget, hovered
               task={task}
               isHighlighted={hoveredTaskId === task.id}
               onHover={onHoverTask}
+              onSelect={onSelectTask}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               onRemove={handleRemove}
