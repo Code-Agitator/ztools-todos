@@ -44,6 +44,7 @@ export const TaskChip = React.memo(function TaskChip({
       const threshold = 40;
 
       const clone = chip.cloneNode(true) as HTMLDivElement;
+      const computedStyle = window.getComputedStyle(chip);
       Object.assign(clone.style, {
         position: 'fixed',
         left: rect.x + 'px',
@@ -53,6 +54,8 @@ export const TaskChip = React.memo(function TaskChip({
         zIndex: '9999',
         pointerEvents: 'none',
         margin: '0',
+        background: computedStyle.background,
+        borderColor: computedStyle.borderColor,
         willChange: 'transform',
       });
       document.body.appendChild(clone);

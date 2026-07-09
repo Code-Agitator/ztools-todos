@@ -45,6 +45,7 @@ export const TaskBlock = React.memo(function TaskBlock({
       const threshold = 40;
 
       const clone = block.cloneNode(true) as HTMLDivElement;
+      const computedStyle = window.getComputedStyle(block);
       Object.assign(clone.style, {
         position: 'fixed',
         left: rect.x + 'px',
@@ -54,6 +55,8 @@ export const TaskBlock = React.memo(function TaskBlock({
         zIndex: '9999',
         pointerEvents: 'none',
         margin: '0',
+        background: computedStyle.background,
+        borderColor: computedStyle.borderColor,
         willChange: 'transform',
       });
       document.body.appendChild(clone);
