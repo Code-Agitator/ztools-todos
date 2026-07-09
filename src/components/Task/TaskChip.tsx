@@ -44,7 +44,6 @@ export const TaskChip = React.memo(function TaskChip({
       const threshold = 40;
 
       const clone = chip.cloneNode(true) as HTMLDivElement;
-      const bar = clone.querySelector('.priority-bar') as HTMLElement;
       Object.assign(clone.style, {
         position: 'fixed',
         left: rect.x + 'px',
@@ -54,7 +53,6 @@ export const TaskChip = React.memo(function TaskChip({
         zIndex: '9999',
         pointerEvents: 'none',
         margin: '0',
-        background: 'white',
         willChange: 'transform',
       });
       document.body.appendChild(clone);
@@ -71,23 +69,18 @@ export const TaskChip = React.memo(function TaskChip({
 
         if (dx > 2) {
           const p = Math.min(dx / threshold, 1);
-          clone.style.background = `rgba(16,185,129,${0.05 + p * 0.35})`;
-          clone.style.borderColor = `rgba(16,185,129,${0.15 + p * 0.5})`;
+          clone.style.boxShadow = `inset 0 0 0 100px rgba(16,185,129,${0.05 + p * 0.25})`;
           clone.style.opacity = '1';
           clone.style.transform = `translate(${dx}px,${dy}px)`;
-          if (bar) bar.style.background = '#10b981';
         } else if (dx < -2) {
           const p = Math.min(-dx / threshold, 1);
           clone.style.opacity = String(1 - p * 0.7);
           clone.style.transform = `translate(${dx}px,${dy}px) scale(${1 - p * 0.1})`;
-          clone.style.borderColor = 'rgba(168, 162, 158, 0.25)';
-          if (bar) bar.style.background = '';
+          clone.style.boxShadow = 'none';
         } else {
-          clone.style.background = 'white';
-          clone.style.borderColor = 'rgba(168,162,158,0.25)';
+          clone.style.boxShadow = 'none';
           clone.style.opacity = '1';
           clone.style.transform = `translate(${dx}px,${dy}px)`;
-          if (bar) bar.style.background = '';
         }
       };
 
