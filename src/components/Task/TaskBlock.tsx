@@ -55,7 +55,7 @@ export const TaskBlock = React.memo(function TaskBlock({
         zIndex: '9999',
         pointerEvents: 'none',
         margin: '0',
-        background: computedStyle.background,
+        backgroundColor: computedStyle.backgroundColor,
         borderColor: computedStyle.borderColor,
         willChange: 'transform',
       });

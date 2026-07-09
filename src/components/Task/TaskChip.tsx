@@ -54,7 +54,7 @@ export const TaskChip = React.memo(function TaskChip({
         zIndex: '9999',
         pointerEvents: 'none',
         margin: '0',
-        background: computedStyle.background,
+        backgroundColor: computedStyle.backgroundColor,
         borderColor: computedStyle.borderColor,
         willChange: 'transform',
       });
