@@ -3,7 +3,7 @@ import { useCalendar } from '../../hooks/useCalendar';
 import { useTasks } from '../../hooks/useTasks';
 import { useAppContext } from '../../context/AppContext';
 import { DayRow } from './DayRow';
-import { isToday, hexToRgba } from '../../utils/dateUtils';
+import { isToday } from '../../utils/dateUtils';
 import { COLOR_SCHEMES } from '../../constants/colorSchemes';
 
 interface WeekViewProps {
