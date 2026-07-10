@@ -1,14 +1,22 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useCalendar } from '../../hooks/useCalendar';
 import { useTasks } from '../../hooks/useTasks';
 import { useAppContext } from '../../context/AppContext';
 import { DayRow } from './DayRow';
-import { isToday } from '../../utils/dateUtils';
+import { isToday, hexToRgba } from '../../utils/dateUtils';
+import { COLOR_SCHEMES } from '../../constants/colorSchemes';
 
 interface WeekViewProps {
   hoveredTaskId?: string | null;
   onHoverTask?: (taskId: string | null) => void;
   onSelectTask?: (taskId: string) => void;
+}
+
+function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
 }
 
 export function WeekView({ hoveredTaskId, onHoverTask, onSelectTask }: WeekViewProps) {
@@ -18,6 +26,13 @@ export function WeekView({ hoveredTaskId, onHoverTask, onSelectTask }: WeekViewP
 
   const weekDays = getCurrentWeek();
   const tasks = getCurrentTasks();
+
+  const accentColor = useMemo(() => {
+    const config = state.workspaceConfigs.find(c => c.id === state.currentWorkspace);
+    const scheme = config ? COLOR_SCHEMES.find(s => s.id === config.colorScheme) : undefined;
+    const primary = scheme?.primary || '#0F766E';
+    return { primary, border: hexToRgba(primary, 0.3) };
+  }, [state.currentWorkspace, state.workspaceConfigs]);
 
   const handleDrop = (date: string, e: React.DragEvent) => {
     e.preventDefault();
@@ -57,6 +72,7 @@ export function WeekView({ hoveredTaskId, onHoverTask, onSelectTask }: WeekViewP
             date={dayDate}
             tasks={dayTasks}
             isToday={isToday(dayDate)}
+            accentColor={accentColor}
             taskViewMode={state.taskViewMode}
             dropTarget={state.dropTargetDate}
             hoveredTaskId={hoveredTaskId}

@@ -126,7 +126,7 @@
 }
 
 .day-row.today {
-  border-color: var(--teal-border);
+  border-color: var(--accent-border, var(--teal-border));
   background: transparent;
 }
 
@@ -177,7 +177,7 @@
 }
 
 .day-row.today .day-date-card {
-  background: var(--teal);
+  background: var(--accent, var(--teal));
   border-color: transparent;
   box-shadow: none;
 }
@@ -197,12 +197,12 @@
   font-size: 8px;
   font-weight: 600;
   color: white;
-  background: var(--teal);
+  background: var(--accent, var(--teal));
   padding: 1px 6px;
   border-radius: 3px;
   letter-spacing: 0.03em;
   white-space: nowrap;
-  box-shadow: 0 1px 3px var(--teal-border);
+  box-shadow: 0 1px 3px var(--accent-border, var(--teal-border));
   transform: rotate(3deg);
 }
 
@@ -415,7 +415,7 @@
 }
 
 .day-cell.today {
-  border-color: var(--teal-border);
+  border-color: var(--accent-border, var(--teal-border));
   background: transparent;
 }
 
@@ -440,7 +440,7 @@
 }
 
 .cell-date.today {
-  background: var(--teal);
+  background: var(--accent, var(--teal));
   color: white;
   border-radius: 50%;
   width: 20px;

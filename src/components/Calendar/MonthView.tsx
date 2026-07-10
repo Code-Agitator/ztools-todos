@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useCalendar } from '../../hooks/useCalendar';
 import { useTasks } from '../../hooks/useTasks';
 import { useAppContext } from '../../context/AppContext';
 import { DayCell } from './DayCell';
 import { isToday } from '../../utils/dateUtils';
+import { COLOR_SCHEMES } from '../../constants/colorSchemes';
 
 interface MonthViewProps {
   hoveredTaskId?: string | null;
@@ -12,10 +13,24 @@ interface MonthViewProps {
   onDateClick?: (date: string) => void;
 }
 
+function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 export function MonthView({ hoveredTaskId, onHoverTask, onSelectTask, onDateClick }: MonthViewProps) {
   const { state, dispatch } = useAppContext();
   const { getCurrentMonth } = useCalendar();
   const { getCurrentTasks, completeTask, deleteTask, addDateToTask, removeDateFromTask } = useTasks();
+
+  const accentColor = useMemo(() => {
+    const config = state.workspaceConfigs.find(c => c.id === state.currentWorkspace);
+    const scheme = config ? COLOR_SCHEMES.find(s => s.id === config.colorScheme) : undefined;
+    const primary = scheme?.primary || '#0F766E';
+    return { primary, border: hexToRgba(primary, 0.3) };
+  }, [state.currentWorkspace, state.workspaceConfigs]);
 
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 
@@ -92,6 +107,7 @@ export function MonthView({ hoveredTaskId, onHoverTask, onSelectTask, onDateClic
               date={date}
               tasks={dayTasks}
               isToday={isToday(date)}
+              accentColor={accentColor}
               isCurrentMonth={isCurrentMonth}
               dropTarget={state.dropTargetDate}
               hoveredTaskId={hoveredTaskId}

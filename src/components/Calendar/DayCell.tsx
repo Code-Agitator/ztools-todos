@@ -6,6 +6,7 @@ interface DayCellProps {
   date: string;
   tasks: Task[];
   isToday: boolean;
+  accentColor?: { primary: string; border: string };
   isCurrentMonth: boolean;
   isHoveredWeek?: boolean;
   dropTarget?: string | null;
@@ -26,7 +27,7 @@ interface DayCellProps {
   onMouseLeave?: () => void;
 }
 
-export function DayCell({ date, tasks, isToday, isCurrentMonth, isHoveredWeek, dropTarget, hoveredTaskId, selectedTaskId, onHoverTask, onSelectTask, onComplete, onDelete, onDragStart, onDragEnd, onRemoveDate, onDragOver, onDragLeave, onDrop, onClick, onMouseEnter, onMouseLeave }: DayCellProps) {
+export function DayCell({ date, tasks, isToday, accentColor, isCurrentMonth, isHoveredWeek, dropTarget, hoveredTaskId, selectedTaskId, onHoverTask, onSelectTask, onComplete, onDelete, onDragStart, onDragEnd, onRemoveDate, onDragOver, onDragLeave, onDrop, onClick, onMouseEnter, onMouseLeave }: DayCellProps) {
   const dateObj = new Date(date);
   const dayNum = dateObj.getDate();
 
@@ -44,6 +45,10 @@ export function DayCell({ date, tasks, isToday, isCurrentMonth, isHoveredWeek, d
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       data-date={date}
+      style={isToday && accentColor ? {
+        '--accent': accentColor.primary,
+        '--accent-border': accentColor.border,
+      } as React.CSSProperties : undefined}
     >
       <div className="cell-header">
         <span className={`cell-date ${isToday ? 'today' : ''}`}>{dayNum}</span>

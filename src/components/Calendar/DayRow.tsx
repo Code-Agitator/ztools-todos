@@ -7,6 +7,7 @@ interface DayRowProps {
   date: string;
   tasks: Task[];
   isToday: boolean;
+  accentColor?: { primary: string; border: string };
   taskViewMode: 'tag' | 'block';
   dropTarget?: string | null;
   hoveredTaskId?: string | null;
@@ -22,7 +23,7 @@ interface DayRowProps {
   onDrop?: (e: React.DragEvent) => void;
 }
 
-export function DayRow({ date, tasks, isToday, taskViewMode, dropTarget, hoveredTaskId, selectedTaskId, onHoverTask, onSelectTask, onDragStart, onDragEnd, onRemoveDate, onComplete, onDragOver, onDragLeave, onDrop }: DayRowProps) {
+export function DayRow({ date, tasks, isToday, accentColor, taskViewMode, dropTarget, hoveredTaskId, selectedTaskId, onHoverTask, onSelectTask, onDragStart, onDragEnd, onRemoveDate, onComplete, onDragOver, onDragLeave, onDrop }: DayRowProps) {
   const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   const dateObj = new Date(date);
   const dayName = dayNames[dateObj.getDay()];
@@ -39,6 +40,10 @@ export function DayRow({ date, tasks, isToday, taskViewMode, dropTarget, hovered
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       data-date={date}
+      style={isToday && accentColor ? {
+        '--accent': accentColor.primary,
+        '--accent-border': accentColor.border,
+      } as React.CSSProperties : undefined}
     >
       <div className="day-header">
         <div className="day-date-card">
