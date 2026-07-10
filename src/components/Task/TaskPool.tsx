@@ -19,6 +19,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
   const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const skipScrollRef = useRef(false);
   
   // Refs for task groups
   const overdueRef = useRef<HTMLDivElement>(null);
@@ -71,6 +72,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
   };
 
   const handleSelectTask = useCallback((taskId: string) => {
+    skipScrollRef.current = true;
     dispatch({ type: 'SET_SELECTED_TASK', payload: { taskId } });
   }, [dispatch]);
 
@@ -108,6 +110,11 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
 
   // Scroll to selected task when selectedTaskId changes
   useEffect(() => {
+    if (skipScrollRef.current) {
+      skipScrollRef.current = false;
+      return;
+    }
+
     const taskId = state.selectedTaskId;
     if (!taskId) return;
 
