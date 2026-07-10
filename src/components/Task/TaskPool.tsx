@@ -70,6 +70,10 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
     dispatch({ type: 'SET_DRAG_STATE', payload: { taskId: null, dropTarget: null } });
   };
 
+  const handleSelectTask = useCallback((taskId: string) => {
+    dispatch({ type: 'SET_SELECTED_TASK', payload: { taskId } });
+  }, [dispatch]);
+
   // 使用 useMemo 缓存分组计算
   const { overdueTasks, todayTasks, thisWeekTasks, unscheduledTasks, completedTasks } = useMemo(() => ({
     overdueTasks: filteredTasks.filter(t => getTaskStatus(t) === 'overdue'),
@@ -222,6 +226,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 hoveredTaskId={hoveredTaskId}
                 selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onSelectTask={handleSelectTask}
                 onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, overdue: !prev.overdue }))}
                 showDates
                 collapsed={!expandedGroups.overdue}
@@ -238,6 +243,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 hoveredTaskId={hoveredTaskId}
                 selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onSelectTask={handleSelectTask}
                 onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, today: !prev.today }))}
                 showDates
                 collapsed={!expandedGroups.today}
@@ -254,6 +260,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 hoveredTaskId={hoveredTaskId}
                 selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onSelectTask={handleSelectTask}
                 onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, week: !prev.week }))}
                 showDates
                 collapsed={!expandedGroups.week}
@@ -270,6 +277,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 hoveredTaskId={hoveredTaskId}
                 selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onSelectTask={handleSelectTask}
                 onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, unscheduled: !prev.unscheduled }))}
                 showDates={false}
                 collapsed={!expandedGroups.unscheduled}
@@ -285,6 +293,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 hoveredTaskId={hoveredTaskId}
                 selectedTaskId={state.selectedTaskId}
                 onHoverTask={onHoverTask}
+                onSelectTask={handleSelectTask}
                 onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, completed: !prev.completed }))}
                 showDates
               />
