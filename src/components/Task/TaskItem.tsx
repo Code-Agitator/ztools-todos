@@ -46,7 +46,9 @@ export const TaskItem = React.memo(function TaskItem({
 
   const startEditing = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onSelect?.(task.id);
+    if (!isSelected) {
+      onSelect?.(task.id);
+    }
     setEditValue(task.title);
     setIsEditing(true);
   };
