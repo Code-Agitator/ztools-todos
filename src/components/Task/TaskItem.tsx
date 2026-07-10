@@ -38,19 +38,26 @@ export const TaskItem = React.memo(function TaskItem({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastClickRef = useRef(0);
+  const suppressSelectRef = useRef(false);
 
   const taskColor = getTaskColor(task.id);
   const itemRef = useRef<HTMLDivElement>(null);
   const callbacksRef = useRef({ onComplete, onDelete });
   callbacksRef.current = { onComplete, onDelete };
 
-  const startEditing = (e: React.MouseEvent) => {
+  const handleTitleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isSelected) {
-      onSelect?.(task.id);
-    }
     setEditValue(task.title);
     setIsEditing(true);
+  };
+
+  const handleTitleClick = (e: React.MouseEvent) => {
+    const now = Date.now();
+    if (now - lastClickRef.current < 400) {
+      suppressSelectRef.current = true;
+    }
+    lastClickRef.current = now;
   };
 
   const commitEdit = () => {
@@ -228,7 +235,14 @@ export const TaskItem = React.memo(function TaskItem({
       draggable
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
-      onClick={(e) => { if (e.button === 0) onSelect?.(task.id); }}
+      onClick={(e) => {
+        if (e.button !== 0) return;
+        if (suppressSelectRef.current) {
+          suppressSelectRef.current = false;
+          return;
+        }
+        onSelect?.(task.id);
+      }}
       onMouseEnter={() => onHover?.(task.id)}
       onMouseLeave={() => onHover?.(null)}
       style={{ '--task-color': taskColor } as React.CSSProperties}
@@ -248,7 +262,7 @@ export const TaskItem = React.memo(function TaskItem({
             onKeyDown={handleInputKeyDown}
           />
         ) : (
-          <span className="task-title" onClick={startEditing}>{task.title}</span>
+          <span className="task-title" onClick={handleTitleClick} onDoubleClick={handleTitleDoubleClick}>{task.title}</span>
         )}
         {task.description && (
           <span className="task-description">{task.description}</span>

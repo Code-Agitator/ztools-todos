@@ -319,11 +319,12 @@
 }
 
 .task-title {
-  display: inline;
+  display: block;
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--ink);
-  line-height: 1.6;
+  line-height: 1.4;
+  margin-bottom: 1px;
 }
 
 .task-item.completed .task-title {
@@ -335,7 +336,6 @@
   display: block;
   font-size: var(--text-sm);
   color: var(--graphite);
-  margin-top: 1px;
   margin-bottom: 2px;
 }
 
