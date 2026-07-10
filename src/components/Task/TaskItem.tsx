@@ -1,7 +1,8 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Task } from '../../types';
 import { formatTaskDates } from '../../utils/taskUtils';
 import { getTaskColor } from '../../utils/colorUtils';
+import { useTasks } from '../../hooks/useTasks';
 import './Task.css';
 
 interface TaskItemProps {
@@ -33,10 +34,51 @@ export const TaskItem = React.memo(function TaskItem({
   onHover,
   onSelect
 }: TaskItemProps) {
+  const { updateTask } = useTasks();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const taskColor = getTaskColor(task.id);
   const itemRef = useRef<HTMLDivElement>(null);
   const callbacksRef = useRef({ onComplete, onDelete });
   callbacksRef.current = { onComplete, onDelete };
+
+  const startEditing = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSelect?.(task.id);
+    setEditValue(task.title);
+    setIsEditing(true);
+  };
+
+  const commitEdit = () => {
+    const trimmed = editValue.trim();
+    if (trimmed && trimmed !== task.title) {
+      updateTask(task.id, { title: trimmed });
+    }
+    setIsEditing(false);
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      commitEdit();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      cancelEdit();
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
 
   useEffect(() => {
     const item = itemRef.current;
@@ -194,7 +236,18 @@ export const TaskItem = React.memo(function TaskItem({
         style={{ backgroundColor: taskColor }}
       />
       <div className="task-content">
-        <span className="task-title">{task.title}</span>
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            className="task-title-input"
+            value={editValue}
+            onChange={e => setEditValue(e.target.value)}
+            onBlur={commitEdit}
+            onKeyDown={handleInputKeyDown}
+          />
+        ) : (
+          <span className="task-title" onClick={startEditing}>{task.title}</span>
+        )}
         {task.description && (
           <span className="task-description">{task.description}</span>
         )}

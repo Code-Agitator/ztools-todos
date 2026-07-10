@@ -339,6 +339,22 @@
   margin-bottom: 2px;
 }
 
+.task-title-input {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 1px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--teal);
+  outline: none;
+  padding: 0;
+  width: 100%;
+  font-family: inherit;
+}
+
 .task-dates {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
