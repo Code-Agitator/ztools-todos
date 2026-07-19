@@ -27,6 +27,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
   const weekRef = useRef<HTMLDivElement>(null);
   const unscheduledRef = useRef<HTMLDivElement>(null);
   const completedRef = useRef<HTMLDivElement>(null);
+  const pendingRef = useRef<HTMLDivElement>(null);
 
   // Track expanded state for each group
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
@@ -76,18 +77,33 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
     dispatch({ type: 'SET_SELECTED_TASK', payload: { taskId } });
   }, [dispatch]);
 
+  const isPoolOnly = state.layoutMode === 'pool-only';
+
   // 使用 useMemo 缓存分组计算
-  const { overdueTasks, todayTasks, thisWeekTasks, unscheduledTasks, completedTasks } = useMemo(() => ({
-    overdueTasks: filteredTasks.filter(t => getTaskStatus(t) === 'overdue'),
-    todayTasks: filteredTasks.filter(t => t.dates.some(d => isToday(d))),
-    thisWeekTasks: filteredTasks.filter(t =>
-      t.dates.some(d => isThisWeek(d)) &&
-      !t.dates.some(d => isToday(d)) &&
-      getTaskStatus(t) !== 'overdue'
-    ),
-    unscheduledTasks: filteredTasks.filter(t => t.dates.length === 0),
-    completedTasks: filteredTasks.filter(t => t.status === 'done')
-  }), [filteredTasks]);
+  const { overdueTasks, todayTasks, thisWeekTasks, unscheduledTasks, completedTasks, pendingTasks } = useMemo(() => {
+    if (isPoolOnly) {
+      return {
+        overdueTasks: [],
+        todayTasks: [],
+        thisWeekTasks: [],
+        unscheduledTasks: [],
+        completedTasks: filteredTasks.filter(t => t.status === 'done'),
+        pendingTasks: filteredTasks.filter(t => t.status !== 'done')
+      };
+    }
+    return {
+      overdueTasks: filteredTasks.filter(t => getTaskStatus(t) === 'overdue'),
+      todayTasks: filteredTasks.filter(t => t.dates.some(d => isToday(d))),
+      thisWeekTasks: filteredTasks.filter(t =>
+        t.dates.some(d => isThisWeek(d)) &&
+        !t.dates.some(d => isToday(d)) &&
+        getTaskStatus(t) !== 'overdue'
+      ),
+      unscheduledTasks: filteredTasks.filter(t => t.dates.length === 0),
+      completedTasks: filteredTasks.filter(t => t.status === 'done'),
+      pendingTasks: []
+    };
+  }, [filteredTasks, isPoolOnly]);
 
   // Handle status click to scroll and expand
   const handleStatusClick = useCallback((groupType: string) => {
@@ -110,6 +126,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
 
   // Scroll to selected task when selectedTaskId changes
   useEffect(() => {
+    if (isPoolOnly) return;
     if (skipScrollRef.current) {
       skipScrollRef.current = false;
       return;
@@ -169,48 +186,79 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
     <div className="task-pool">
       <div className="task-pool-header">
         <h2>待办池</h2>
-        <div className="task-status-distribution">
-          {overdueTasks.length > 0 && (
-            <button 
-              className="status-item overdue"
-              onClick={() => handleStatusClick('overdue')}
-            >
-              <span className="status-dot"></span>
-              <span className="status-text">逾期</span>
-              <span className="status-count">{overdueTasks.length}</span>
-            </button>
-          )}
-          {todayTasks.length > 0 && (
-            <button 
-              className="status-item today"
-              onClick={() => handleStatusClick('today')}
-            >
-              <span className="status-dot"></span>
-              <span className="status-text">今天</span>
-              <span className="status-count">{todayTasks.length}</span>
-            </button>
-          )}
-          {thisWeekTasks.length > 0 && (
-            <button 
-              className="status-item week"
-              onClick={() => handleStatusClick('week')}
-            >
-              <span className="status-dot"></span>
-              <span className="status-text">本周</span>
-              <span className="status-count">{thisWeekTasks.length}</span>
-            </button>
-          )}
-          {unscheduledTasks.length > 0 && (
-            <button 
-              className="status-item unscheduled"
-              onClick={() => handleStatusClick('unscheduled')}
-            >
-              <span className="status-dot"></span>
-              <span className="status-text">未安排</span>
-              <span className="status-count">{unscheduledTasks.length}</span>
-            </button>
-          )}
-        </div>
+        {isPoolOnly ? (
+          <div className="task-status-distribution">
+            {pendingTasks.length > 0 && (
+              <button
+                className="status-item pending"
+                onClick={() => {
+                  setExpandedGroups(prev => ({ ...prev, completed: false }));
+                  setTimeout(() => pendingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+                }}
+              >
+                <span className="status-dot"></span>
+                <span className="status-text">待办</span>
+                <span className="status-count">{pendingTasks.length}</span>
+              </button>
+            )}
+            {completedTasks.length > 0 && (
+              <button
+                className="status-item done"
+                onClick={() => {
+                  setExpandedGroups(prev => ({ ...prev, completed: true }));
+                  setTimeout(() => completedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+                }}
+              >
+                <span className="status-dot"></span>
+                <span className="status-text">已完成</span>
+                <span className="status-count">{completedTasks.length}</span>
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="task-status-distribution">
+            {overdueTasks.length > 0 && (
+              <button 
+                className="status-item overdue"
+                onClick={() => handleStatusClick('overdue')}
+              >
+                <span className="status-dot"></span>
+                <span className="status-text">逾期</span>
+                <span className="status-count">{overdueTasks.length}</span>
+              </button>
+            )}
+            {todayTasks.length > 0 && (
+              <button 
+                className="status-item today"
+                onClick={() => handleStatusClick('today')}
+              >
+                <span className="status-dot"></span>
+                <span className="status-text">今天</span>
+                <span className="status-count">{todayTasks.length}</span>
+              </button>
+            )}
+            {thisWeekTasks.length > 0 && (
+              <button 
+                className="status-item week"
+                onClick={() => handleStatusClick('week')}
+              >
+                <span className="status-dot"></span>
+                <span className="status-text">本周</span>
+                <span className="status-count">{thisWeekTasks.length}</span>
+              </button>
+            )}
+            {unscheduledTasks.length > 0 && (
+              <button 
+                className="status-item unscheduled"
+                onClick={() => handleStatusClick('unscheduled')}
+              >
+                <span className="status-dot"></span>
+                <span className="status-text">未安排</span>
+                <span className="status-count">{unscheduledTasks.length}</span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="task-pool-content" ref={contentRef}>
@@ -220,6 +268,39 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
             title="暂无任务"
             description="在下方输入框中添加新任务"
           />
+        ) : isPoolOnly ? (
+          <>
+            <div ref={pendingRef}>
+              <TaskGroup
+                title="待办"
+                tasks={pendingTasks}
+                onComplete={completeTask}
+                onDelete={deleteTask}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                hoveredTaskId={hoveredTaskId}
+                selectedTaskId={state.selectedTaskId}
+                onHoverTask={onHoverTask}
+                onSelectTask={handleSelectTask}
+                showDates={false}
+              />
+            </div>
+            <div ref={completedRef}>
+              <TaskGroup
+                title="已完成"
+                tasks={completedTasks}
+                onComplete={completeTask}
+                onDelete={deleteTask}
+                collapsed={!expandedGroups.completed}
+                hoveredTaskId={hoveredTaskId}
+                selectedTaskId={state.selectedTaskId}
+                onHoverTask={onHoverTask}
+                onSelectTask={handleSelectTask}
+                onToggleCollapse={() => setExpandedGroups(prev => ({ ...prev, completed: !prev.completed }))}
+                showDates={false}
+              />
+            </div>
+          </>
         ) : (
           <>
             <div ref={overdueRef}>

@@ -37,9 +37,13 @@ export const TaskItem = React.memo(function TaskItem({
   const { updateTask } = useTasks();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
+  const [isEditingDesc, setIsEditingDesc] = useState(false);
+  const [editDescValue, setEditDescValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const descInputRef = useRef<HTMLTextAreaElement>(null);
   const lastClickRef = useRef(0);
   const suppressSelectRef = useRef(false);
+  const suppressDescSelectRef = useRef(false);
 
   const taskColor = getTaskColor(task.id);
   const itemRef = useRef<HTMLDivElement>(null);
@@ -82,12 +86,55 @@ export const TaskItem = React.memo(function TaskItem({
     }
   };
 
+  const handleDescDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditDescValue(task.description || '');
+    setIsEditingDesc(true);
+  };
+
+  const handleDescClick = (e: React.MouseEvent) => {
+    const now = Date.now();
+    if (now - lastClickRef.current < 400) {
+      suppressDescSelectRef.current = true;
+    }
+    lastClickRef.current = now;
+  };
+
+  const commitDescEdit = () => {
+    const trimmed = editDescValue.trim();
+    if (trimmed !== (task.description || '')) {
+      updateTask(task.id, { description: trimmed || undefined });
+    }
+    setIsEditingDesc(false);
+  };
+
+  const cancelDescEdit = () => {
+    setIsEditingDesc(false);
+  };
+
+  const handleDescKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      cancelDescEdit();
+    } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      commitDescEdit();
+    }
+  };
+
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
     }
   }, [isEditing]);
+
+  useEffect(() => {
+    if (isEditingDesc && descInputRef.current) {
+      descInputRef.current.focus();
+      descInputRef.current.select();
+    }
+  }, [isEditingDesc]);
 
   useEffect(() => {
     const item = itemRef.current;
@@ -128,15 +175,62 @@ export const TaskItem = React.memo(function TaskItem({
       document.body.appendChild(clone);
       item.style.opacity = '0.3';
 
+      const actionLabel = document.createElement('div');
+      actionLabel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;font-size:16px;font-weight:700;padding:12px 32px;white-space:nowrap;border-radius:10px;opacity:0;background:red;color:white;';
+      document.body.appendChild(actionLabel);
+
+      const cloneLabel = document.createElement('div');
+      cloneLabel.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;letter-spacing:1px;pointer-events:none;';
+      clone.appendChild(cloneLabel);
+
       let raf: number | null = null;
       let pendingDx = 0;
       let pendingDy = 0;
+      let lastTrend: 'left' | 'right' | null = null;
 
       const flush = () => {
         raf = null;
         const dx = pendingDx;
         const dy = pendingDy;
 
+        const committedRight = dx > threshold;
+        const committedLeft = dx < -threshold;
+
+        // Determine label
+        let label = '';
+        let labelColor = '';
+        let labelBg = '';
+        let labelBorder = '';
+
+        if (committedRight) {
+          if (lastTrend === 'left') {
+            label = '↩ 取消完成';
+            labelColor = '#f59e0b';
+            labelBg = 'rgba(245,158,11,0.15)';
+            labelBorder = '1px solid rgba(245,158,11,0.3)';
+          } else {
+            label = '✓ 完成';
+            labelColor = '#10b981';
+            labelBg = 'rgba(16,185,129,0.15)';
+            labelBorder = '1px solid rgba(16,185,129,0.3)';
+          }
+        } else if (committedLeft) {
+          if (lastTrend === 'right') {
+            label = '↩ 取消删除';
+            labelColor = '#f59e0b';
+            labelBg = 'rgba(245,158,11,0.15)';
+            labelBorder = '1px solid rgba(245,158,11,0.3)';
+          } else {
+            label = '✕ 删除';
+            labelColor = '#e11d48';
+            labelBg = 'rgba(225,29,72,0.15)';
+            labelBorder = '1px solid rgba(225,29,72,0.3)';
+          }
+        }
+
+        const showLabel = !!label;
+
+        // Clone visual based on dx (smooth)
         if (dx > 2) {
           const p = Math.min(dx / threshold, 1);
           clone.style.background = `rgba(16,185,129,${0.05 + p * 0.35})`;
@@ -157,10 +251,26 @@ export const TaskItem = React.memo(function TaskItem({
           clone.style.transform = `translate(${dx}px,${dy}px)`;
           if (bar) bar.style.background = taskColor;
         }
+
+        // Labels
+        actionLabel.textContent = label;
+        actionLabel.style.opacity = showLabel ? '1' : '0';
+        actionLabel.style.color = labelColor;
+        actionLabel.style.background = labelBg;
+        actionLabel.style.border = labelBorder;
+
+        cloneLabel.textContent = label;
+        cloneLabel.style.color = labelColor;
+        cloneLabel.style.opacity = showLabel ? '1' : '0';
       };
 
       const onMouseMove = (e: MouseEvent) => {
-        pendingDx = e.clientX - startX;
+        const newDx = e.clientX - startX;
+        const delta = newDx - pendingDx;
+        if (Math.abs(delta) > 5) {
+          lastTrend = delta > 0 ? 'right' : 'left';
+        }
+        pendingDx = newDx;
         pendingDy = e.clientY - startY;
         if (raf === null) {
           raf = requestAnimationFrame(flush);
@@ -172,10 +282,12 @@ export const TaskItem = React.memo(function TaskItem({
         const dx = e.clientX - startX;
         const { onComplete, onDelete } = callbacksRef.current;
 
-        if (dx > threshold && onComplete) onComplete(task.id);
-        else if (dx < -threshold && onDelete) onDelete(task.id);
+        // Only fire if past threshold AND not reversing
+        if (dx > threshold && lastTrend !== 'left' && onComplete) onComplete(task.id);
+        else if (dx < -threshold && lastTrend !== 'right' && onDelete) onDelete(task.id);
 
         clone.remove();
+        actionLabel.remove();
         item.style.opacity = '';
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
@@ -190,6 +302,7 @@ export const TaskItem = React.memo(function TaskItem({
           e.stopPropagation();
           if (raf !== null) cancelAnimationFrame(raf);
           clone.remove();
+          actionLabel.remove();
           item.style.opacity = '';
           document.removeEventListener('mousemove', onMouseMove);
           document.removeEventListener('mouseup', onMouseUp);
@@ -203,6 +316,7 @@ export const TaskItem = React.memo(function TaskItem({
         e.preventDefault();
         if (raf !== null) cancelAnimationFrame(raf);
         clone.remove();
+        actionLabel.remove();
         item.style.opacity = '';
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
@@ -218,7 +332,12 @@ export const TaskItem = React.memo(function TaskItem({
     };
 
     item.addEventListener('mousedown', onMouseDown);
-    return () => item.removeEventListener('mousedown', onMouseDown);
+    const onContextMenu = (e: Event) => { if (active) e.preventDefault(); };
+    item.addEventListener('contextmenu', onContextMenu);
+    return () => {
+      item.removeEventListener('mousedown', onMouseDown);
+      item.removeEventListener('contextmenu', onContextMenu);
+    };
   }, [task.id]);
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -264,8 +383,24 @@ export const TaskItem = React.memo(function TaskItem({
         ) : (
           <span className="task-title" onClick={handleTitleClick} onDoubleClick={handleTitleDoubleClick}>{task.title}</span>
         )}
-        {task.description && (
-          <span className="task-description">{task.description}</span>
+        {isEditingDesc ? (
+          <textarea
+            ref={descInputRef}
+            className="task-desc-input"
+            value={editDescValue}
+            onChange={e => setEditDescValue(e.target.value)}
+            onBlur={commitDescEdit}
+            onKeyDown={handleDescKeyDown}
+            rows={2}
+          />
+        ) : (
+          <span
+            className={`task-description ${!task.description ? 'empty' : ''}`}
+            onClick={handleDescClick}
+            onDoubleClick={handleDescDoubleClick}
+          >
+            {task.description || '添加描述...'}
+          </span>
         )}
         {showDates && task.dates.length > 0 && (
           <div className="task-dates">

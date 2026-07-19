@@ -6,10 +6,12 @@ import './WorkspaceSettings.css';
 interface WorkspaceSettingsProps {
   configs: WorkspaceConfig[];
   onUpdate: (configs: WorkspaceConfig[]) => void;
+  layoutMode: 'split' | 'pool-only';
+  onChangeLayoutMode: (mode: 'split' | 'pool-only') => void;
   onClose: () => void;
 }
 
-export function WorkspaceSettings({ configs, onUpdate, onClose }: WorkspaceSettingsProps) {
+export function WorkspaceSettings({ configs, onUpdate, layoutMode, onChangeLayoutMode, onClose }: WorkspaceSettingsProps) {
   const [editingConfig, setEditingConfig] = useState<WorkspaceConfig | null>(null);
   const [newName, setNewName] = useState('');
   const [selectedScheme, setSelectedScheme] = useState('teal');
@@ -112,6 +114,37 @@ export function WorkspaceSettings({ configs, onUpdate, onClose }: WorkspaceSetti
             <button className="add-btn" onClick={handleAdd} disabled={configs.length >= 5}>
               + 添加新组
             </button>
+
+            <div className="settings-divider"></div>
+
+            <div className="layout-section">
+              <h3>布局模式</h3>
+              <div className="layout-options">
+                <button
+                  className={`layout-option ${layoutMode === 'split' ? 'active' : ''}`}
+                  onClick={() => onChangeLayoutMode('split')}
+                >
+                  <span className="layout-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <rect x="1" y="3" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                      <rect x="15" y="3" width="4" height="14" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+                    </svg>
+                  </span>
+                  <span className="layout-label">日历 + 待办</span>
+                </button>
+                <button
+                  className={`layout-option ${layoutMode === 'pool-only' ? 'active' : ''}`}
+                  onClick={() => onChangeLayoutMode('pool-only')}
+                >
+                  <span className="layout-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                    </svg>
+                  </span>
+                  <span className="layout-label">仅待办池</span>
+                </button>
+              </div>
+            </div>
           </>
         )}
       </div>

@@ -11,6 +11,7 @@ export const initialState: AppState = {
   workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
   viewMode: 'week',
   taskViewMode: 'tag',
+  layoutMode: 'split',
   currentDate: new Date().toISOString().split('T')[0],
   searchQuery: '',
   selectedTaskId: null,
@@ -201,6 +202,12 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         selectedTaskId: action.payload.taskId === state.selectedTaskId ? null : action.payload.taskId
+      };
+    
+    case 'SET_LAYOUT_MODE':
+      return {
+        ...state,
+        layoutMode: action.payload.layoutMode
       };
     
     default:

@@ -6,10 +6,13 @@ import { DEFAULT_WORKSPACE_CONFIGS } from '../constants/colorSchemes';
 describe('WorkspaceSettings', () => {
   const mockOnUpdate = jest.fn();
   const mockOnClose = jest.fn();
+  const mockOnChangeLayoutMode = jest.fn();
+  const defaultLayoutMode = 'split';
 
   beforeEach(() => {
     mockOnUpdate.mockClear();
     mockOnClose.mockClear();
+    mockOnChangeLayoutMode.mockClear();
   });
 
   it('renders workspace list', () => {
@@ -18,6 +21,8 @@ describe('WorkspaceSettings', () => {
         configs={DEFAULT_WORKSPACE_CONFIGS}
         onUpdate={mockOnUpdate}
         onClose={mockOnClose}
+        layoutMode={defaultLayoutMode}
+        onChangeLayoutMode={mockOnChangeLayoutMode}
       />
     );
 
@@ -33,6 +38,8 @@ describe('WorkspaceSettings', () => {
         configs={DEFAULT_WORKSPACE_CONFIGS}
         onUpdate={mockOnUpdate}
         onClose={mockOnClose}
+        layoutMode={defaultLayoutMode}
+        onChangeLayoutMode={mockOnChangeLayoutMode}
       />
     );
 
@@ -46,6 +53,8 @@ describe('WorkspaceSettings', () => {
         configs={DEFAULT_WORKSPACE_CONFIGS}
         onUpdate={mockOnUpdate}
         onClose={mockOnClose}
+        layoutMode={defaultLayoutMode}
+        onChangeLayoutMode={mockOnChangeLayoutMode}
       />
     );
 
@@ -60,6 +69,8 @@ describe('WorkspaceSettings', () => {
         configs={DEFAULT_WORKSPACE_CONFIGS}
         onUpdate={mockOnUpdate}
         onClose={mockOnClose}
+        layoutMode={defaultLayoutMode}
+        onChangeLayoutMode={mockOnChangeLayoutMode}
       />
     );
 

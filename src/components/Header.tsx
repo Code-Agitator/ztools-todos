@@ -25,6 +25,10 @@ export function Header() {
     dispatch({ type: 'UPDATE_WORKSPACE_CONFIGS', payload: { configs } });
   }, [dispatch]);
 
+  const handleChangeLayoutMode = useCallback((mode: 'split' | 'pool-only') => {
+    dispatch({ type: 'SET_LAYOUT_MODE', payload: { layoutMode: mode } });
+  }, [dispatch]);
+
   return (
     <header className="header">
       <div className="header-left">
@@ -55,6 +59,8 @@ export function Header() {
         <WorkspaceSettings
           configs={state.workspaceConfigs}
           onUpdate={handleUpdateConfigs}
+          layoutMode={state.layoutMode}
+          onChangeLayoutMode={handleChangeLayoutMode}
           onClose={() => setShowSettings(false)}
         />
       )}

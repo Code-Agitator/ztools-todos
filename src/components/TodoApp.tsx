@@ -39,8 +39,10 @@ function TodoAppContent() {
   return (
     <div className="todo-app">
       <Header />
-      <div className="todo-content">
-        <CalendarView hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} onSelectTask={handleSelectTask} />
+      <div className={`todo-content ${state.layoutMode === 'pool-only' ? 'pool-only' : ''}`}>
+        {state.layoutMode === 'split' && (
+          <CalendarView hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} onSelectTask={handleSelectTask} />
+        )}
         <TaskPool hoveredTaskId={hoveredTaskId} onHoverTask={handleHoverTask} />
         <WorkspaceGradient />
       </div>

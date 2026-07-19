@@ -101,6 +101,11 @@ a {
   position: relative;
 }
 
+.todo-content.pool-only .task-pool {
+  width: 100%;
+  max-width: 100%;
+}
+
 /* Calendar Panel — takes remaining space */
 .calendar-view {
   flex: 1;

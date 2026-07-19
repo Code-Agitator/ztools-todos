@@ -99,6 +99,24 @@
   background: var(--clay);
 }
 
+.status-item.pending .status-dot {
+  background: var(--teal);
+}
+
+.status-item.pending .status-text,
+.status-item.pending .status-count {
+  color: var(--teal);
+}
+
+.status-item.done .status-dot {
+  background: var(--emerald);
+}
+
+.status-item.done .status-text,
+.status-item.done .status-count {
+  color: var(--emerald);
+}
+
 /* ═══════════════════════════════════════════════════════════
    TASK POOL CONTENT
    ═══════════════════════════════════════════════════════════ */
@@ -336,6 +354,28 @@
   display: block;
   font-size: var(--text-sm);
   color: var(--graphite);
+  margin-bottom: 2px;
+}
+
+.task-description.empty {
+  color: var(--clay);
+  font-style: italic;
+  cursor: default;
+}
+
+.task-desc-input {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--ink);
+  line-height: 1.4;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--teal);
+  outline: none;
+  padding: 0;
+  width: 100%;
+  font-family: inherit;
+  resize: none;
   margin-bottom: 2px;
 }
 
