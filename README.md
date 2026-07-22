@@ -29,12 +29,10 @@
 
 ## 应用截图
 
-| 功能 | 截图 |
-|------|------|
-| 日历视图 | ![](screenshots/calendar.png) |
-| 任务管理 | ![](screenshots/tasks.png) |
-
-> TODO: 请替换上方截图路径为你实际的截图文件
+### 周视图
+![img.png](docs/img.png)
+### 日历视图
+![img_1.png](docs/img_1.png)
 
 ## 快速开始
 
