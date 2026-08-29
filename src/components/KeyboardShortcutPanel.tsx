@@ -1,5 +1,5 @@
 import React from 'react';
-import { MousePointerClick, Pencil, ArrowRight, Keyboard } from 'lucide-react';
+import { MousePointerClick, Pencil, ArrowRight } from 'lucide-react';
 import './KeyboardShortcutPanel.css';
 
 interface KeyboardShortcutPanelProps {
