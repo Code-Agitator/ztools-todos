@@ -11,7 +11,7 @@ export function KeyboardShortcutPanel({ visible, onClose }: KeyboardShortcutPane
   if (!visible) return null;
 
   return (
-    <div className="shortcut-panel-overlay" onClick={onClose}>
+    <div className="shortcut-panel-overlay" data-testid="shortcut-panel-overlay" onClick={onClose}>
       <div className="shortcut-panel" onClick={(e) => e.stopPropagation()}>
         <h3>操作指引</h3>
         <div className="shortcut-columns">
