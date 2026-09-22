@@ -393,6 +393,7 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
       <div className="task-pool-input">
         <textarea
           ref={textareaRef}
+          className="app-input"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleSubmit}
