@@ -9,6 +9,8 @@ function createStorageData(overrides: Partial<StorageData> = {}): StorageData {
     currentWorkspace: 'work',
     workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
     viewMode: 'week',
+    layoutMode: 'split',
+    taskViewMode: 'tag',
     currentDate: '2024-01-15',
     ...overrides,
   };
@@ -55,6 +57,8 @@ describe('storageUtils', () => {
         currentWorkspace: 'work',
         workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
         viewMode: 'week',
+        layoutMode: 'split',
+        taskViewMode: 'tag',
         currentDate: '2024-01-15',
       };
       localStorage.setItem('todos-data', JSON.stringify(data));
@@ -77,6 +81,8 @@ describe('storageUtils', () => {
         currentWorkspace: 'work',
         workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
         viewMode: 'week',
+        layoutMode: 'split',
+        taskViewMode: 'tag',
         currentDate: '2024-01-15',
       };
 
@@ -150,6 +156,17 @@ describe('storageUtils', () => {
       expect(store.has('workspace-configs')).toBe(false);
     });
 
+    it('should keep layout preferences across an app restart', () => {
+      installZtoolsStorage();
+
+      saveData(createStorageData({ layoutMode: 'pool-only', taskViewMode: 'block' }));
+
+      // 模拟重启：重新读取快照
+      const reloaded = loadData();
+      expect(reloaded?.layoutMode).toBe('pool-only');
+      expect(reloaded?.taskViewMode).toBe('block');
+    });
+
     it('should keep a separate namespace for dev data', () => {
       const production = createStorageData({ currentDate: '2024-01-01' });
       const dev = createStorageData({ currentDate: '2024-05-05' });
@@ -216,6 +233,8 @@ describe('storageUtils', () => {
         currentWorkspace: 'life',
         workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
         viewMode: 'month',
+        layoutMode: 'pool-only',
+        taskViewMode: 'block',
         currentDate: '2024-06-01',
       };
       const result = migrateData(data);
@@ -287,6 +306,39 @@ describe('storageUtils', () => {
       };
       const result = migrateData(data);
       expect(result.viewMode).toBe('week');
+    });
+
+    it('should default layout preferences for snapshots saved before they were persisted', () => {
+      const legacy = {
+        version: '1.0.0',
+        workspaces: { work: [], life: [], study: [] },
+        currentWorkspace: 'work',
+        workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
+        viewMode: 'week',
+        currentDate: '2024-01-01',
+      };
+      const result = migrateData(legacy);
+      expect(result.layoutMode).toBe('split');
+      expect(result.taskViewMode).toBe('tag');
+    });
+
+    it('should fall back to defaults for invalid layout values', () => {
+      const data = {
+        ...createStorageData(),
+        layoutMode: 'three-columns',
+        taskViewMode: 'huge',
+      } as any;
+      const result = migrateData(data);
+      expect(result.layoutMode).toBe('split');
+      expect(result.taskViewMode).toBe('tag');
+    });
+
+    it('should keep pool-only layout and block task view', () => {
+      const result = migrateData(
+        createStorageData({ layoutMode: 'pool-only', taskViewMode: 'block' })
+      );
+      expect(result.layoutMode).toBe('pool-only');
+      expect(result.taskViewMode).toBe('block');
     });
   });
 });

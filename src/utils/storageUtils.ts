@@ -276,6 +276,8 @@ export function migrateData(data: any): StorageData {
     currentWorkspace: validateWorkspace(data.currentWorkspace, workspaceConfigs),
     workspaceConfigs,
     viewMode: validateViewMode(data.viewMode),
+    layoutMode: validateLayoutMode(data.layoutMode),
+    taskViewMode: validateTaskViewMode(data.taskViewMode),
     currentDate: data.currentDate || formatDateForStorage(new Date()),
   };
 }
@@ -290,6 +292,8 @@ function createDefaultData(configs: WorkspaceConfig[] = loadWorkspaceConfigs()):
     currentWorkspace: validateWorkspace(configs[0]?.id || 'work', configs),
     workspaceConfigs: configs,
     viewMode: 'week',
+    layoutMode: 'split',
+    taskViewMode: 'tag',
     currentDate: formatDateForStorage(new Date()),
   };
 }
@@ -314,6 +318,14 @@ function migrateToLatest(data: any): StorageData {
 
   if (data.viewMode) {
     migrated.viewMode = validateViewMode(data.viewMode);
+  }
+
+  if (data.layoutMode) {
+    migrated.layoutMode = validateLayoutMode(data.layoutMode);
+  }
+
+  if (data.taskViewMode) {
+    migrated.taskViewMode = validateTaskViewMode(data.taskViewMode);
   }
 
   if (data.currentDate) {
@@ -358,6 +370,28 @@ function validateViewMode(viewMode: any): 'week' | 'month' {
     return viewMode;
   }
   return 'week';
+}
+
+/**
+ * 验证布局模式值（兼容旧快照里没有该字段的情况）
+ * @param layoutMode 布局模式值
+ */
+function validateLayoutMode(layoutMode: any): 'split' | 'pool-only' {
+  if (layoutMode === 'split' || layoutMode === 'pool-only') {
+    return layoutMode;
+  }
+  return 'split';
+}
+
+/**
+ * 验证日历任务展示密度
+ * @param taskViewMode 展示密度值
+ */
+function validateTaskViewMode(taskViewMode: any): 'tag' | 'block' {
+  if (taskViewMode === 'tag' || taskViewMode === 'block') {
+    return taskViewMode;
+  }
+  return 'tag';
 }
 
 /**

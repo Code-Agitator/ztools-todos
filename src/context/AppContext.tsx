@@ -26,6 +26,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         currentWorkspace: 'work' as Workspace,
         workspaceConfigs: savedData?.workspaceConfigs ?? loadWorkspaceConfigs(),
         viewMode: 'week' as const,
+        layoutMode: savedData?.layoutMode ?? init.layoutMode,
+        taskViewMode: savedData?.taskViewMode ?? init.taskViewMode,
         currentDate: init.currentDate,
       };
     }
@@ -38,19 +40,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return init;
   });
 
-  // 只持久化真正需要保存的字段，UI 状态变化不会触发写入。
+  // 只持久化稳定字段（含布局偏好），搜索、选中、拖拽等瞬时 UI 状态不触发写入。
   const persistable = useMemo<StorageData>(() => ({
     version: '1.0.0',
     workspaces: state.workspaces,
     currentWorkspace: state.currentWorkspace,
     workspaceConfigs: state.workspaceConfigs,
     viewMode: state.viewMode,
+    layoutMode: state.layoutMode,
+    taskViewMode: state.taskViewMode,
     currentDate: state.currentDate,
   }), [
     state.workspaces,
     state.currentWorkspace,
     state.workspaceConfigs,
     state.viewMode,
+    state.layoutMode,
+    state.taskViewMode,
     state.currentDate,
   ]);
 

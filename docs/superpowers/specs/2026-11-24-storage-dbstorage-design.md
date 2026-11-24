@@ -35,7 +35,7 @@
 
 | Key | 内容 | 位置 |
 |-----|------|------|
-| `todos-data` | 主快照：版本、workspaces、currentWorkspace、workspaceConfigs、viewMode、currentDate | `ztools.dbStorage` |
+| `todos-data` | 主快照：版本、workspaces、currentWorkspace、workspaceConfigs、viewMode、layoutMode、taskViewMode、currentDate | `ztools.dbStorage` |
 | `todos-data-backup` | 上一版有效快照 | `ztools.dbStorage` |
 | `todos-data-dev` | 开发模式主快照 | `ztools.dbStorage` |
 | `todos-data-dev-backup` | 开发模式备份 | `ztools.dbStorage` |
@@ -71,9 +71,11 @@
 - `currentWorkspace`
 - `workspaceConfigs`
 - `viewMode`
+- `layoutMode`（布局模式：`split` / `pool-only`，用户偏好，重启后保留）
+- `taskViewMode`（日历任务密度：`tag` / `block`）
 - `currentDate`
 
-只有这些字段变化才触发保存；`selectedTaskId`、`searchQuery`、拖拽状态、布局模式等 UI 状态不会触发写入。
+只有这些字段变化才触发保存；`selectedTaskId`、`searchQuery`、拖拽状态等瞬时 UI 状态不会触发写入。`layoutMode`、`taskViewMode` 虽是界面状态，但代表用户偏好，必须随快照保存，否则重启后会被重置为初始值。
 
 同时移除单独保存 `workspaceConfigs` 的 effect，配置随主快照一起保存。
 
