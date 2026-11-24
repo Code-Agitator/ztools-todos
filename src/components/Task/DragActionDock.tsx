@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Check, Trash2 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { DragPoint, getDragStartPoint } from '../../utils/dragUtils';
@@ -6,17 +6,40 @@ import './DragActionDock.css';
 
 type DropTarget = 'complete' | 'delete';
 
-const DOCK_WIDTH = 120;
-const TARGET_HEIGHT = 44;
-const TARGET_GAP = 24;
-const DOCK_HEIGHT = TARGET_HEIGHT * 2 + TARGET_GAP;
-const EDGE = 8;
-const HORIZONTAL_OFFSET = 20;
-const VERTICAL_OFFSET = 20;
+const OUTER_RADIUS = 96;
+const CENTER_RADIUS = 30;
+const SIZE = OUTER_RADIUS * 2;
+const CENTER = OUTER_RADIUS;
+const LABEL_RADIUS = (OUTER_RADIUS + CENTER_RADIUS) / 2;
+const SECTOR_ANGLE = 72;
+const COMPLETE_ANGLE = -SECTOR_ANGLE / 2;
+const DELETE_ANGLE = SECTOR_ANGLE / 2;
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
+function polar(radius: number, angleDeg: number) {
+  const angle = (angleDeg * Math.PI) / 180;
+  return {
+    x: CENTER + radius * Math.cos(angle),
+    y: CENTER + radius * Math.sin(angle),
+  };
 }
+
+function pieSlicePath(startAngle: number, endAngle: number) {
+  const outerStart = polar(OUTER_RADIUS, startAngle);
+  const outerEnd = polar(OUTER_RADIUS, endAngle);
+  const largeArc = Math.abs(endAngle - startAngle) > 180 ? 1 : 0;
+
+  return [
+    `M ${CENTER} ${CENTER}`,
+    `L ${outerStart.x} ${outerStart.y}`,
+    `A ${OUTER_RADIUS} ${OUTER_RADIUS} 0 ${largeArc} 1 ${outerEnd.x} ${outerEnd.y}`,
+    'Z',
+  ].join(' ');
+}
+
+const COMPLETE_PATH = pieSlicePath(-SECTOR_ANGLE, 0);
+const DELETE_PATH = pieSlicePath(0, SECTOR_ANGLE);
+const COMPLETE_LABEL = polar(LABEL_RADIUS, COMPLETE_ANGLE);
+const DELETE_LABEL = polar(LABEL_RADIUS, DELETE_ANGLE);
 
 function getInitialPoint(taskId: string): DragPoint {
   const remembered = getDragStartPoint();
@@ -31,32 +54,6 @@ function getInitialPoint(taskId: string): DragPoint {
   }
 
   return { x: window.innerWidth - 220, y: window.innerHeight / 2 };
-}
-
-function getDockPosition(point: DragPoint) {
-  const left = clamp(
-    point.x + HORIZONTAL_OFFSET,
-    EDGE,
-    Math.max(EDGE, window.innerWidth - DOCK_WIDTH - EDGE)
-  );
-
-  // 光标落在两块操作区之间的空隙里：完成在上、删除在下。
-  const centeredTop = point.y - TARGET_HEIGHT - TARGET_GAP / 2;
-  let top: number;
-
-  if (centeredTop < EDGE) {
-    // 靠近顶部时，两块都放到光标下方，保持“上完成后删除”的顺序。
-    top = point.y + VERTICAL_OFFSET;
-  } else if (centeredTop + DOCK_HEIGHT > window.innerHeight - EDGE) {
-    // 靠近底部时，两块都放到光标上方。
-    top = point.y - DOCK_HEIGHT - VERTICAL_OFFSET;
-  } else {
-    top = centeredTop;
-  }
-
-  top = clamp(top, EDGE, Math.max(EDGE, window.innerHeight - DOCK_HEIGHT - EDGE));
-
-  return { left, top };
 }
 
 export function DragActionDock() {
@@ -75,37 +72,21 @@ function DragActionDockContent() {
   const draggedTask = (state.workspaces[state.currentWorkspace] || [])
     .find(task => task.id === taskId);
   const [hovered, setHovered] = useState<DropTarget | null>(null);
-  const [position] = useState(() => getDockPosition(getInitialPoint(taskId)));
-
-  const completeRef = useRef<HTMLDivElement>(null);
-  const deleteRef = useRef<HTMLDivElement>(null);
-
-  const getTargetFromPoint = useCallback((x: number, y: number): DropTarget | null => {
-    if (x === 0 && y === 0) {
-      return null;
-    }
-
-    const isInside = (element: HTMLDivElement | null) => {
-      if (!element) {
-        return false;
-      }
-      const rect = element.getBoundingClientRect();
-      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
-    };
-
-    if (isInside(completeRef.current)) {
-      return 'complete';
-    }
-    if (isInside(deleteRef.current)) {
-      return 'delete';
-    }
-    return null;
-  }, []);
+  const [position] = useState(() => {
+    const point = getInitialPoint(taskId);
+    return { left: point.x - OUTER_RADIUS, top: point.y - OUTER_RADIUS };
+  });
 
   const updateHover = useCallback((x: number, y: number) => {
-    const target = getTargetFromPoint(x, y);
+    if (typeof document.elementFromPoint !== 'function') {
+      return;
+    }
+
+    const element = document.elementFromPoint(x, y) as Element | null;
+    const targetEl = element?.closest('[data-drag-target]');
+    const target = targetEl?.getAttribute('data-drag-target') as DropTarget | null;
     setHovered(prev => (prev === target ? prev : target));
-  }, [getTargetFromPoint]);
+  }, []);
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
@@ -122,46 +103,100 @@ function DragActionDockContent() {
     return null;
   }
 
-  const isDone = draggedTask.status === 'done';
-
   return (
     <div
-      className="drag-action-dock"
+      className="drag-action-ring"
       data-testid="drag-action-dock"
       role="region"
       aria-label="任务拖拽操作区"
-      style={{ left: position.left, top: position.top }}
+      style={{ left: position.left, top: position.top, width: SIZE, height: SIZE }}
     >
-      <div
-        ref={completeRef}
-        className={`drag-action-target complete ${hovered === 'complete' ? 'is-hovered' : ''}`}
-        data-testid="drag-action-complete"
-        data-drag-target="complete"
-        title="拖到这里完成"
+      <svg
+        className="drag-action-ring__svg"
+        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        aria-hidden="true"
       >
-        <span className="drag-action-target__icon">
-          <Check size={16} strokeWidth={2.5} />
-        </span>
-        <span className="drag-action-target__label">
-          {hovered === 'complete'
-            ? (isDone ? '松手取消' : '松手完成')
-            : (isDone ? '取消完成' : '完成')}
-        </span>
+        <defs>
+          <radialGradient
+            id="drag-complete-gradient"
+            gradientUnits="userSpaceOnUse"
+            cx={CENTER}
+            cy={CENTER}
+            r={OUTER_RADIUS}
+          >
+            <stop offset="0%" stopColor="#4F8F72" stopOpacity="0" />
+            <stop offset="55%" stopColor="#4F8F72" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#4F8F72" stopOpacity="0.38" />
+          </radialGradient>
+          <radialGradient
+            id="drag-complete-gradient-hover"
+            gradientUnits="userSpaceOnUse"
+            cx={CENTER}
+            cy={CENTER}
+            r={OUTER_RADIUS}
+          >
+            <stop offset="0%" stopColor="#16A34A" stopOpacity="0.02" />
+            <stop offset="55%" stopColor="#16A34A" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#16A34A" stopOpacity="0.78" />
+          </radialGradient>
+          <radialGradient
+            id="drag-delete-gradient"
+            gradientUnits="userSpaceOnUse"
+            cx={CENTER}
+            cy={CENTER}
+            r={OUTER_RADIUS}
+          >
+            <stop offset="0%" stopColor="#B06A6A" stopOpacity="0" />
+            <stop offset="55%" stopColor="#B06A6A" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="#B06A6A" stopOpacity="0.34" />
+          </radialGradient>
+          <radialGradient
+            id="drag-delete-gradient-hover"
+            gradientUnits="userSpaceOnUse"
+            cx={CENTER}
+            cy={CENTER}
+            r={OUTER_RADIUS}
+          >
+            <stop offset="0%" stopColor="#DC2626" stopOpacity="0.02" />
+            <stop offset="55%" stopColor="#DC2626" stopOpacity="0.26" />
+            <stop offset="100%" stopColor="#DC2626" stopOpacity="0.68" />
+          </radialGradient>
+        </defs>
+
+        <path
+          className={`drag-action-ring__sector complete ${hovered === 'complete' ? 'is-hovered' : ''}`}
+          data-testid="drag-action-complete"
+          data-drag-target="complete"
+          d={COMPLETE_PATH}
+        />
+        <path
+          className={`drag-action-ring__sector delete ${hovered === 'delete' ? 'is-hovered' : ''}`}
+          data-testid="drag-action-delete"
+          data-drag-target="delete"
+          d={DELETE_PATH}
+        />
+        <circle
+          className="drag-action-ring__dead-zone"
+          cx={CENTER}
+          cy={CENTER}
+          r={CENTER_RADIUS}
+        />
+      </svg>
+
+      <div
+        className={`drag-action-ring__label complete ${hovered === 'complete' ? 'is-hovered' : ''}`}
+        data-testid="drag-action-complete-label"
+        style={{ left: COMPLETE_LABEL.x, top: COMPLETE_LABEL.y }}
+      >
+        <Check size={18} strokeWidth={2.5} />
       </div>
 
       <div
-        ref={deleteRef}
-        className={`drag-action-target delete ${hovered === 'delete' ? 'is-hovered' : ''}`}
-        data-testid="drag-action-delete"
-        data-drag-target="delete"
-        title="拖到这里删除"
+        className={`drag-action-ring__label delete ${hovered === 'delete' ? 'is-hovered' : ''}`}
+        data-testid="drag-action-delete-label"
+        style={{ left: DELETE_LABEL.x, top: DELETE_LABEL.y }}
       >
-        <span className="drag-action-target__icon">
-          <Trash2 size={16} strokeWidth={2.5} />
-        </span>
-        <span className="drag-action-target__label">
-          {hovered === 'delete' ? '松手删除' : '删除'}
-        </span>
+        <Trash2 size={18} strokeWidth={2.5} />
       </div>
     </div>
   );

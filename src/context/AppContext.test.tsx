@@ -27,7 +27,14 @@ function TestComponent() {
       <span data-testid="viewMode">{state.viewMode}</span>
       <button
         data-testid="switchWorkspace"
-        onClick={() => dispatch({ type: 'SWITCH_WORKSPACE', payload: { workspace: 'life' } })}
+        onClick={() => {
+          const next = state.currentWorkspace === 'work'
+            ? 'life'
+            : state.currentWorkspace === 'life'
+              ? 'study'
+              : 'work';
+          dispatch({ type: 'SWITCH_WORKSPACE', payload: { workspace: next } });
+        }}
       >
         Switch
       </button>

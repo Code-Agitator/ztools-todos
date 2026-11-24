@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Task } from '../../types';
-import { getTaskColor } from '../../utils/colorUtils';
+import { getPriorityColor, getPriorityLabel } from '../../utils/colorUtils';
 import './TaskBlock.css';
 
 interface TaskBlockProps {
@@ -22,7 +22,8 @@ export const TaskBlock = React.memo(function TaskBlock({
   onComplete,
   onSelect
 }: TaskBlockProps) {
-  const taskColor = getTaskColor(task.id);
+  const taskColor = getPriorityColor(task.priority);
+  const priorityLabel = getPriorityLabel(task.priority);
   const blockRef = useRef<HTMLDivElement>(null);
   const callbacksRef = useRef({ onComplete, onRemove });
   callbacksRef.current = { onComplete, onRemove };
@@ -233,12 +234,17 @@ export const TaskBlock = React.memo(function TaskBlock({
       data-task-id={task.id}
       className={`task-block ${task.status === 'done' ? 'done' : ''} ${isHighlighted ? 'highlighted' : ''}`}
       style={{ '--task-color': taskColor } as React.CSSProperties}
+      title={task.title}
       onClick={(e) => { if (e.button === 0) onSelect?.(task.id); }}
       onMouseEnter={() => onHover?.(task.id)}
       onMouseLeave={() => onHover?.(null)}
     >
       <div className="block-drag-area">
-        <span className="priority-bar"></span>
+        <span
+          className="priority-bar"
+          role="img"
+          aria-label={`优先级：${priorityLabel}`}
+        ></span>
         <div className="block-content">
           <span className="block-title">{task.title}</span>
           {task.description && (

@@ -2,8 +2,44 @@ import { StorageData } from '../types';
 import { loadData, saveData, migrateData } from './storageUtils';
 import { DEFAULT_WORKSPACE_CONFIGS } from '../constants/colorSchemes';
 
+function createStorageData(overrides: Partial<StorageData> = {}): StorageData {
+  return {
+    version: '1.0.0',
+    workspaces: { work: [], life: [], study: [] },
+    currentWorkspace: 'work',
+    workspaceConfigs: DEFAULT_WORKSPACE_CONFIGS,
+    viewMode: 'week',
+    currentDate: '2024-01-15',
+    ...overrides,
+  };
+}
+
+function installZtoolsStorage(initial: Record<string, string> = {}) {
+  const store = new Map<string, string>(Object.entries(initial));
+
+  (window as any).ztools = {
+    dbStorage: {
+      getItem: jest.fn((key: string) => (store.has(key) ? store.get(key) : null)),
+      setItem: jest.fn((key: string, value: string) => {
+        store.set(key, value);
+      }),
+      removeItem: jest.fn((key: string) => {
+        store.delete(key);
+      }),
+    },
+  };
+
+  return store;
+}
+
 describe('storageUtils', () => {
   beforeEach(() => {
+    localStorage.clear();
+    delete (window as any).ztools;
+  });
+
+  afterEach(() => {
+    delete (window as any).ztools;
     localStorage.clear();
   });
 
@@ -47,6 +83,106 @@ describe('storageUtils', () => {
       saveData(data);
       const saved = JSON.parse(localStorage.getItem('todos-data') || '{}');
       expect(saved).toEqual(data);
+    });
+  });
+
+  describe('ZTools dbStorage', () => {
+    it('should save and load data from dbStorage', () => {
+      const store = installZtoolsStorage();
+      const data = createStorageData();
+
+      saveData(data);
+
+      expect(store.get('todos-data')).toBe(JSON.stringify(data));
+      expect(localStorage.getItem('todos-data')).toBeNull();
+      expect(loadData()).toEqual(data);
+    });
+
+    it('should keep the previous snapshot as backup', () => {
+      const previous = createStorageData({ currentDate: '2024-01-01' });
+      const next = createStorageData({ currentDate: '2024-02-02' });
+      const store = installZtoolsStorage({
+        'todos-data': JSON.stringify(previous),
+      });
+
+      saveData(next);
+
+      expect(store.get('todos-data')).toBe(JSON.stringify(next));
+      expect(store.get('todos-data-backup')).toBe(JSON.stringify(previous));
+    });
+
+    it('should restore the backup when the primary snapshot is corrupt', () => {
+      const backup = createStorageData({ currentDate: '2024-03-03' });
+      const store = installZtoolsStorage({
+        'todos-data': 'invalid json',
+        'todos-data-backup': JSON.stringify(backup),
+      });
+
+      expect(loadData()).toEqual(backup);
+      expect(store.get('todos-data')).toBe(JSON.stringify(backup));
+    });
+
+    it('should migrate legacy localStorage data into dbStorage', () => {
+      const legacy = createStorageData({ currentDate: '2024-04-04' });
+      localStorage.setItem('todos-data', JSON.stringify(legacy));
+      const store = installZtoolsStorage();
+
+      expect(loadData()).toEqual(legacy);
+      expect(store.get('todos-data')).toBe(JSON.stringify(legacy));
+      expect(store.get('todos-data-backup')).toBe(JSON.stringify(legacy));
+      expect(localStorage.getItem('todos-data')).toBeNull();
+    });
+
+    it('should migrate legacy workspace configs into a snapshot', () => {
+      const customConfigs = [
+        ...DEFAULT_WORKSPACE_CONFIGS,
+        { id: 'workspace-123', name: '新组', colorScheme: 'teal', order: 3 },
+      ];
+      const store = installZtoolsStorage({
+        'workspace-configs': JSON.stringify(customConfigs),
+      });
+
+      const loaded = loadData();
+
+      expect(loaded?.workspaceConfigs).toEqual(customConfigs);
+      expect(loaded?.workspaces['workspace-123']).toEqual([]);
+      expect(store.get('todos-data')).toBeTruthy();
+      expect(store.has('workspace-configs')).toBe(false);
+    });
+
+    it('should keep a separate namespace for dev data', () => {
+      const production = createStorageData({ currentDate: '2024-01-01' });
+      const dev = createStorageData({ currentDate: '2024-05-05' });
+      const store = installZtoolsStorage({
+        'todos-data': JSON.stringify(production),
+      });
+
+      saveData(dev, 'todos-data-dev');
+
+      expect(store.get('todos-data-dev')).toBe(JSON.stringify(dev));
+      expect(store.get('todos-data')).toBe(JSON.stringify(production));
+      expect(loadData('todos-data-dev')).toEqual(dev);
+      expect(loadData()).toEqual(production);
+    });
+
+    it('should not migrate production legacy data into a dev namespace', () => {
+      const production = createStorageData();
+      localStorage.setItem('todos-data', JSON.stringify(production));
+      installZtoolsStorage();
+
+      expect(loadData('todos-data-dev')).toBeNull();
+      expect(localStorage.getItem('todos-data')).toBe(JSON.stringify(production));
+    });
+
+    it('should remove legacy config storage when the snapshot already has configs', () => {
+      const data = createStorageData();
+      const store = installZtoolsStorage({
+        'todos-data': JSON.stringify(data),
+        'workspace-configs': JSON.stringify(DEFAULT_WORKSPACE_CONFIGS),
+      });
+
+      expect(loadData()).toEqual(data);
+      expect(store.has('workspace-configs')).toBe(false);
     });
   });
 

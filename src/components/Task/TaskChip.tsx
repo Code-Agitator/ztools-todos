@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Task } from '../../types';
-import { getTaskColor } from '../../utils/colorUtils';
+import { getPriorityColor, getPriorityLabel } from '../../utils/colorUtils';
 
 interface TaskChipProps {
   task: Task;
@@ -21,7 +21,8 @@ export const TaskChip = React.memo(function TaskChip({
   onComplete,
   onSelect
 }: TaskChipProps) {
-  const taskColor = getTaskColor(task.id);
+  const taskColor = getPriorityColor(task.priority);
+  const priorityLabel = getPriorityLabel(task.priority);
   const chipRef = useRef<HTMLDivElement>(null);
   const callbacksRef = useRef({ onComplete, onRemove });
   callbacksRef.current = { onComplete, onRemove };
@@ -232,12 +233,17 @@ export const TaskChip = React.memo(function TaskChip({
       data-task-id={task.id}
       className={`task-chip ${task.status === 'done' ? 'done' : ''} ${isHighlighted ? 'highlighted' : ''}`}
       style={{ '--task-color': taskColor } as React.CSSProperties}
+      title={task.title}
       onClick={(e) => { if (e.button === 0) onSelect?.(task.id); }}
       onMouseEnter={() => onHover?.(task.id)}
       onMouseLeave={() => onHover?.(null)}
     >
       <div className="chip-drag-area">
-        <span className="priority-bar"></span>
+        <span
+          className="priority-bar"
+          role="img"
+          aria-label={`优先级：${priorityLabel}`}
+        ></span>
         <span className="chip-title">{task.title}</span>
       </div>
     </div>

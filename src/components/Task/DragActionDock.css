@@ -1,16 +1,12 @@
-.drag-action-dock {
+.drag-action-ring {
   position: fixed;
   z-index: 900;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 120px;
   pointer-events: none;
   user-select: none;
-  animation: drag-action-pop 140ms var(--ease-out);
+  animation: drag-ring-fade 140ms var(--ease-out);
 }
 
-@keyframes drag-action-pop {
+@keyframes drag-ring-fade {
   from {
     opacity: 0;
   }
@@ -19,84 +15,84 @@
   }
 }
 
-.drag-action-target {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  height: 44px;
-  padding: 6px 12px;
-  background: var(--paper);
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  box-shadow: var(--shadow-md);
-  color: var(--graphite);
-  pointer-events: auto;
-  cursor: grabbing;
-  transition:
-    transform var(--duration-fast) var(--ease-out),
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
+.drag-action-ring__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 8px 20px rgba(28, 25, 23, 0.18));
 }
 
-.drag-action-target__icon {
+.drag-action-ring__sector {
+  pointer-events: auto;
+  cursor: grabbing;
+}
+
+.drag-action-ring__sector.complete {
+  fill: url(#drag-complete-gradient);
+}
+
+.drag-action-ring__sector.complete.is-hovered {
+  fill: url(#drag-complete-gradient-hover);
+}
+
+.drag-action-ring__sector.delete {
+  fill: url(#drag-delete-gradient);
+}
+
+.drag-action-ring__sector.delete.is-hovered {
+  fill: url(#drag-delete-gradient-hover);
+}
+
+.drag-action-ring__dead-zone {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.drag-action-ring__label {
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  transition: inherit;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
 }
 
-.drag-action-target__label {
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  white-space: nowrap;
+.drag-action-ring__label.complete {
+  color: #4f8f72;
+  background: rgba(79, 143, 114, 0.1);
 }
 
-.drag-action-target.complete .drag-action-target__icon {
+.drag-action-ring__label.complete.is-hovered {
   color: var(--color-success);
-  background: rgba(22, 163, 74, 0.1);
+  background: rgba(22, 163, 74, 0.24);
+  transform: translate(-50%, -50%) scale(1.08);
 }
 
-.drag-action-target.delete .drag-action-target__icon {
+.drag-action-ring__label.delete {
+  color: #b06a6a;
+  background: rgba(176, 106, 106, 0.1);
+}
+
+.drag-action-ring__label.delete.is-hovered {
   color: var(--color-danger);
-  background: rgba(220, 38, 38, 0.1);
-}
-
-.drag-action-target.complete.is-hovered {
-  border-color: var(--color-success);
-  background: rgba(22, 163, 74, 0.12);
-  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15), var(--shadow-md);
-  color: var(--color-success);
-}
-
-.drag-action-target.complete.is-hovered .drag-action-target__icon {
-  background: rgba(22, 163, 74, 0.18);
-  color: var(--color-success);
-}
-
-.drag-action-target.delete.is-hovered {
-  border-color: var(--color-danger);
-  background: rgba(220, 38, 38, 0.12);
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15), var(--shadow-md);
-  color: var(--color-danger);
-}
-
-.drag-action-target.delete.is-hovered .drag-action-target__icon {
-  background: rgba(220, 38, 38, 0.18);
-  color: var(--color-danger);
+  background: rgba(220, 38, 38, 0.22);
+  transform: translate(-50%, -50%) scale(1.08);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .drag-action-dock {
+  .drag-action-ring {
     animation: none;
   }
 
-  .drag-action-target {
+  .drag-action-ring__sector,
+  .drag-action-ring__label {
     transition: none;
   }
 }

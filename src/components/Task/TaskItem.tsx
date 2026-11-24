@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Task } from '../../types';
 import { formatTaskDates } from '../../utils/taskUtils';
-import { getTaskColor } from '../../utils/colorUtils';
+import { getPriorityColor, getPriorityLabel } from '../../utils/colorUtils';
 import { useTasks } from '../../hooks/useTasks';
 import './Task.css';
 
@@ -43,7 +43,8 @@ export const TaskItem = React.memo(function TaskItem({
   const suppressSelectRef = useRef(false);
   const suppressDescSelectRef = useRef(false);
 
-  const taskColor = getTaskColor(task.id);
+  const taskColor = getPriorityColor(task.priority);
+  const priorityLabel = getPriorityLabel(task.priority);
   const itemRef = useRef<HTMLDivElement>(null);
   const callbacksRef = useRef({ onComplete, onDelete });
   callbacksRef.current = { onComplete, onDelete };
@@ -358,6 +359,9 @@ export const TaskItem = React.memo(function TaskItem({
       <div
         className="priority-indicator"
         style={{ backgroundColor: taskColor }}
+        role="img"
+        aria-label={`优先级：${priorityLabel}`}
+        title={`优先级：${priorityLabel}`}
       />
       <div className="task-content">
         {isEditing ? (

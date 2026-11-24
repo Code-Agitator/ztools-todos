@@ -65,10 +65,22 @@
 
 `DragActionDock` 改为纯视觉组件：
 
-- 继续根据 `draggedTaskId` 显示，根据拖拽起点定位。
-- 监听 `pointermove`，按自身两个按钮的矩形更新 hover 状态。
-- 两个按钮增加 `data-drag-target="complete" | "delete"`，供拖拽控制器命中。
+- 继续根据 `draggedTaskId` 显示，以拖拽起点为圆心定位。
+- 监听 `pointermove`，用 `elementFromPoint` 命中的 `[data-drag-target]` 更新 hover 状态。
+- 两个 SVG 扇形 path 增加 `data-drag-target="complete" | "delete"`，供拖拽控制器命中。
 - 移除原生 `dragover` / `drop` / `click` / `pointerup` 执行逻辑；动作统一由拖拽控制器负责，避免重复执行。
+
+#### 双扇形形态
+
+- 外半径 96px，以拖拽起点为圆心。
+- 右上 72° 扇形 = 完成，右下 72° = 删除；两块沿水平半径贴合，组成整圆 40%（144°）的饼形区域。
+- 扇形从圆心一直填充到外弧，不再保留内圈空洞。
+- 颜色使用纯色 + 从圆心向外的透明度渐变：中心完全透明，越靠外颜色越实；不使用纸色底板，任务内容能透出来。
+- 扇形使用 SVG path 绘制，既是视觉形状也是精确命中区域。
+- 圆心保留一个半径 30px 的透明死区，避免拖拽起点立刻命中某个扇形；死区不影响渐变外观。
+- 只保留图标，用 HTML 覆盖在扇形中心（36° 方向），并设置 `pointer-events: none`，让指针命中 SVG path。
+- 未选中时使用低饱和的灰绿 / 灰红，避免抢眼；悬停时切回高饱和绿 / 红。
+- 悬停只切换扇形渐变和图标背景，不改变扇形几何尺寸。
 
 ### 日历
 
@@ -116,7 +128,7 @@
 
 - 新增 `TaskDragController`，挂在 `TodoApp` 中，统一处理任务拖拽。
 - `TaskItem` / `TaskChip` / `TaskBlock` 已移除原生 `draggable` 和原生拖拽回调。
-- `DragActionDock` 已改为纯视觉组件，通过 `data-drag-target` 暴露两个投放区。
+- `DragActionDock` 已改为纯视觉组件：以拖拽起点为圆心展开整圆 40% 的双扇形饼图（右上完成 / 右下删除，各 72°，中心向外径向渐变），通过 SVG path 的 `data-drag-target` 暴露两个投放区。
 - 浏览器验证通过：
   - 拖到右上完成按钮，任务变为已完成
   - 拖到右下删除按钮，任务被删除

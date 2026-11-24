@@ -56,8 +56,9 @@ export function TaskDragController() {
       if (!session.previewEl) {
         return;
       }
-      session.previewEl.style.left = `${x + PREVIEW_OFFSET}px`;
-      session.previewEl.style.top = `${y + PREVIEW_OFFSET}px`;
+      // 预览放在光标左上方，避开右侧的扇形操作区。
+      session.previewEl.style.left = `${x - PREVIEW_OFFSET}px`;
+      session.previewEl.style.top = `${y - PREVIEW_OFFSET}px`;
     };
 
     const updateDropTarget = (session: DragSession, x: number, y: number) => {
