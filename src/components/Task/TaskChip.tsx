@@ -17,8 +17,6 @@ export const TaskChip = React.memo(function TaskChip({
   task,
   isHighlighted,
   onHover,
-  onDragStart,
-  onDragEnd,
   onRemove,
   onComplete,
   onSelect
@@ -228,12 +226,6 @@ export const TaskChip = React.memo(function TaskChip({
     };
   }, [task.id]);
 
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('text/plain', task.id);
-    e.dataTransfer.effectAllowed = 'move';
-    onDragStart?.(task.id);
-  };
-
   return (
     <div
       ref={chipRef}
@@ -244,12 +236,7 @@ export const TaskChip = React.memo(function TaskChip({
       onMouseEnter={() => onHover?.(task.id)}
       onMouseLeave={() => onHover?.(null)}
     >
-      <div
-        className="chip-drag-area"
-        draggable
-        onDragStart={handleDragStart}
-        onDragEnd={onDragEnd}
-      >
+      <div className="chip-drag-area">
         <span className="priority-bar"></span>
         <span className="chip-title">{task.title}</span>
       </div>

@@ -18,8 +18,6 @@ export const TaskBlock = React.memo(function TaskBlock({
   task,
   isHighlighted,
   onHover,
-  onDragStart,
-  onDragEnd,
   onRemove,
   onComplete,
   onSelect
@@ -229,12 +227,6 @@ export const TaskBlock = React.memo(function TaskBlock({
     };
   }, [task.id]);
 
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('text/plain', task.id);
-    e.dataTransfer.effectAllowed = 'move';
-    onDragStart?.(task.id);
-  };
-
   return (
     <div
       ref={blockRef}
@@ -245,12 +237,7 @@ export const TaskBlock = React.memo(function TaskBlock({
       onMouseEnter={() => onHover?.(task.id)}
       onMouseLeave={() => onHover?.(null)}
     >
-      <div
-        className="block-drag-area"
-        draggable
-        onDragStart={handleDragStart}
-        onDragEnd={onDragEnd}
-      >
+      <div className="block-drag-area">
         <span className="priority-bar"></span>
         <div className="block-content">
           <span className="block-title">{task.title}</span>

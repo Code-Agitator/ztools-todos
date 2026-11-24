@@ -299,6 +299,8 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 tasks={completedTasks}
                 onComplete={completeTask}
                 onDelete={deleteTask}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
                 collapsed={!expandedGroups.completed}
                 hoveredTaskId={hoveredTaskId}
                 selectedTaskId={state.selectedTaskId}
@@ -385,6 +387,8 @@ export function TaskPool({ hoveredTaskId, onHoverTask }: TaskPoolProps) {
                 tasks={completedTasks}
                 onComplete={completeTask}
                 onDelete={deleteTask}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
                 collapsed={!expandedGroups.completed}
                 hoveredTaskId={hoveredTaskId}
                 selectedTaskId={state.selectedTaskId}

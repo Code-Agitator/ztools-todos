@@ -30,11 +30,11 @@
   flex-shrink: 0;
 }
 
-.legend-icon.swipe-right {
+.legend-icon.complete {
   color: var(--color-success);
 }
 
-.legend-icon.swipe-left {
+.legend-icon.delete {
   color: var(--color-danger);
 }
 

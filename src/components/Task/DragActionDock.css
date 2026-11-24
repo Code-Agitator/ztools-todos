@@ -1,0 +1,102 @@
+.drag-action-dock {
+  position: fixed;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 120px;
+  pointer-events: none;
+  user-select: none;
+  animation: drag-action-pop 140ms var(--ease-out);
+}
+
+@keyframes drag-action-pop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.drag-action-target {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 44px;
+  padding: 6px 12px;
+  background: var(--paper);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-md);
+  color: var(--graphite);
+  pointer-events: auto;
+  cursor: grabbing;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.drag-action-target__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: inherit;
+}
+
+.drag-action-target__label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.drag-action-target.complete .drag-action-target__icon {
+  color: var(--color-success);
+  background: rgba(22, 163, 74, 0.1);
+}
+
+.drag-action-target.delete .drag-action-target__icon {
+  color: var(--color-danger);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.drag-action-target.complete.is-hovered {
+  border-color: var(--color-success);
+  background: rgba(22, 163, 74, 0.12);
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15), var(--shadow-md);
+  color: var(--color-success);
+}
+
+.drag-action-target.complete.is-hovered .drag-action-target__icon {
+  background: rgba(22, 163, 74, 0.18);
+  color: var(--color-success);
+}
+
+.drag-action-target.delete.is-hovered {
+  border-color: var(--color-danger);
+  background: rgba(220, 38, 38, 0.12);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15), var(--shadow-md);
+  color: var(--color-danger);
+}
+
+.drag-action-target.delete.is-hovered .drag-action-target__icon {
+  background: rgba(220, 38, 38, 0.18);
+  color: var(--color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drag-action-dock {
+    animation: none;
+  }
+
+  .drag-action-target {
+    transition: none;
+  }
+}

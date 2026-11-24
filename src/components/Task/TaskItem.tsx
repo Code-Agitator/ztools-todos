@@ -24,8 +24,6 @@ export const TaskItem = React.memo(function TaskItem({
   task,
   onComplete,
   onDelete,
-  onDragStart,
-  onDragEnd,
   showDates = true,
   isOverdue = false,
   isToday = false,
@@ -340,20 +338,11 @@ export const TaskItem = React.memo(function TaskItem({
     };
   }, [task.id]);
 
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('text/plain', task.id);
-    e.dataTransfer.effectAllowed = 'move';
-    onDragStart?.(task.id);
-  };
-
   return (
     <div
       ref={itemRef}
       data-task-id={task.id}
       className={`task-item ${task.status === 'done' ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${isToday ? 'today' : ''} ${isHighlighted ? 'highlighted' : ''} ${isSelected ? 'selected' : ''}`}
-      draggable
-      onDragStart={handleDragStart}
-      onDragEnd={onDragEnd}
       onClick={(e) => {
         if (e.button !== 0) return;
         if (suppressSelectRef.current) {
